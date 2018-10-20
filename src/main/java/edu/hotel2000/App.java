@@ -8,8 +8,6 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.DefaultGasProvider;
 
-import java.io.Console;
-
 public class App{
 
 	private final static Logger logger = Logger.getLogger(App.class);
