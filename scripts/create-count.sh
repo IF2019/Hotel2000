@@ -10,5 +10,5 @@ geth account new --datadir ./
 echo
 echo
 
-echo "patch=${BLOCKCHAIN_DIR}/${BLOCKCHAIN_NAME}/keystore/$(ls -t keystore/ | head -1)"
+echo "path=${BLOCKCHAIN_DIR}/${BLOCKCHAIN_NAME}/keystore/$(ls -t keystore/ | head -1)"
 echo "address=$(ls -t keystore/ | head -1 | grep -o [a-z0-9]*$)"
