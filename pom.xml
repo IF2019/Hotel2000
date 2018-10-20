@@ -38,6 +38,24 @@
 					<target>8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.web3j</groupId>
+				<artifactId>web3j-maven-plugin</artifactId>
+				<version>0.3.7</version>
+				<configuration>
+					<packageName>edu.hotel2000.contract</packageName>
+					<outputDirectory>java</outputDirectory>
+					<soliditySourceFiles>
+						<directory>src/main/solidity</directory>
+						<includes>
+							<include>**/*.sol</include>
+						</includes>
+					</soliditySourceFiles>
+					<outputDirectory>
+						<java>src/main/java</java>
+					</outputDirectory>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
