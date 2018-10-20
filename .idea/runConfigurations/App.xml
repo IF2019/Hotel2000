@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="App" type="Application" factoryName="Application" singleton="true">
+    <option name="MAIN_CLASS_NAME" value="edu.hotel2000.App" />
+    <module name="hotel2000" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
