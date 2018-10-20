@@ -16,9 +16,9 @@
     Dans le dossier Ressources (`./src/main/resources`): <br>
     Créez le fichier `config-local.properties` (Vous pouvez copier le fichier `config.properties`)<br>
     Changer la valeur des 3 propriétées suivant avec les valeur utiliser/recuperer avec le script `create-count.sh` <br>
-    Exemple: <br>
+    Exemple:
     
-    ``` properties
+    ```
     hotel2000.account.deploy.path=blockchain/bchotel2000/keystore/UTC--2018-10-20T14-00-18.558264042Z--ab9f2020e56dbae3a2d7d0eefaff5df7fba0a7cc
     hotel2000.account.deploy.address=ab9f2020e56dbae3a2d7d0eefaff5df7fba0a7cc
     hotel2000.account.deploy.passphrase=azerty
