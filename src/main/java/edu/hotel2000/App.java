@@ -11,9 +11,6 @@ import org.web3j.tx.gas.DefaultGasProvider;
 public class App{
 
 	private final static Logger logger = Logger.getLogger(App.class);
-	private static final String DEPLOYER_ADDRESS = Config.get("hotel2000.account.deploy.address");
-	private static final String DEPLOYER_PASSPHRASE = Config.get("hotel2000.account.deploy.passphrase");
-	private static final String DEPLOYER_FILE = Config.get("hotel2000.account.deploy.path");
 	private static final String WEB3J_URL = Config.get("web3jServer");
 
 	public static void main(String[] args) throws Exception{
@@ -23,8 +20,8 @@ public class App{
 		logger.debug("Create Web3j HTTP service Finish");
 
 
-		Credentials credentials = WalletUtils.loadCredentials(DEPLOYER_PASSPHRASE, DEPLOYER_FILE);
-		logger.info("Deployer Contract Hotel2000 from: " + DEPLOYER_ADDRESS);
+		Credentials credentials = AccountService.findFromConfig("deploy");
+		logger.info("Deployer Contract Hotel2000 from: " + credentials.getAddress());
 		Hotel2000 hotel2000 = Hotel2000.deploy(web3j, credentials, new DefaultGasProvider()).send();
 
 		logger.info("test: " + hotel2000.test().send());
