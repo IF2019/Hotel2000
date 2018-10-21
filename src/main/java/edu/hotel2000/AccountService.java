@@ -7,6 +7,7 @@ import org.web3j.crypto.WalletUtils;
 import java.io.IOException;
 import java.util.Optional;
 
+@SuppressWarnings("WeakerAccess")
 public class AccountService{
 	public static Credentials findFromConfig(String name) throws IOException, CipherException{
 //		String deployerAddress = Config.get("hotel2000.account." + name + ".address");
