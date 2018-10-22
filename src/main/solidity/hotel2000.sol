@@ -56,6 +56,16 @@ contract Hotel2000 {
 
     // start and end are daystamps
     function canBook(string _code, uint32 _start, uint32 _end, uint32 _room) view public returns(bool, string) {
+        bool          bookable;
+        string memory message;
+        (bookable, message) = canBook_internal(_code, _start, _end, _room);
+        if (!bookable) return (bookable, message);
+        if (msg.sender.balance < hotels[_code].price) return (false, "your balance isn't high enough");
+        return (true, "you can book this room");
+    }
+
+    // start and end are daystamps
+    function canBook_internal(string _code, uint32 _start, uint32 _end, uint32 _room) view internal returns(bool, string) {
         Lib.Hotel storage hotel = hotels[_code];
         require(hotel.isset, "hotel not found");
         Lib.Room storage room = hotels[_code].rooms[_room];
@@ -65,19 +75,24 @@ contract Hotel2000 {
             // @IMPROVE add the booking days
             if (bookings[room.bookings[i]].isset) return (false, "the room has already been booked");
         }
-        if (msg.sender.balance < hotel.price) return (false, "your balance isn't high enough");
 
         return (true, "");
     }
     
     // start and end are daystamps
-    function book(string _code, uint32 _start, uint32 _end, uint32 _room) public {
+    function book(string _code, uint32 _start, uint32 _end, uint32 _room) public payable {
         bool          bookable;
         string memory message;
-        (bookable, message) = canBook(_code, _start, _end, _room);
+        (bookable, message) = canBook_internal(_code, _start, _end, _room);
         require(bookable, message);
+
         Lib.Hotel   storage hotel = hotels[_code];
         Lib.Room    storage room  = hotel.rooms[_room];
+        
+        if (msg.value < hotel.price) {
+            msg.sender.transfer(msg.value);
+            return;
+        }
 
         uint32 booking_id = bookingIdInc++;
         Lib.Booking storage booking = bookings[booking_id];
@@ -92,6 +107,8 @@ contract Hotel2000 {
         booking.end       = _end;
         booking.room      = _room;
         
+        // @TODO Add timeout events to refund or send money to the owner
+
         for (uint32 i = _start; i < _end; i++) {
             room.bookings[i] = booking_id;
         }
