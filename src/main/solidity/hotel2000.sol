@@ -3,7 +3,7 @@ import {Lib} from "./lib.sol";
 
 contract Hotel2000 {
 
-	uint bookingIdInc = 1;
+	uint32 bookingIdInc = 1;
 	mapping(uint => Lib.Booking) bookings; // ResevationID => Reservation
 	mapping(string => Lib.Hotel) hotels; // HotelCode  => Hotel
 
