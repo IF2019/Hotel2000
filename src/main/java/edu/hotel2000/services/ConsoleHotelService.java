@@ -19,6 +19,7 @@ class ConsoleHotelService{
 
 	private ConsoleEnv env;
 	private AccountService accountService;
+	private ConsoleUtilService consoleUtilService;
 
 	void infoHotel(String accountName, String code) throws Exception{
 		Credentials account = accountService.findFromConfigOption(accountName)
@@ -49,14 +50,18 @@ class ConsoleHotelService{
 	void createHotel(String accountName, String code, int nbRoom, BigInteger price) throws Exception{
 		Credentials account = accountService.findFromConfigOption(accountName)
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
-		Hotel2000 hotel2000 = Hotel2000.load(env.getContractAddress(), env.getWeb3j(), account, new DefaultGasProvider());
+		DefaultGasProvider gasProvider = new DefaultGasProvider();
+		Hotel2000 hotel2000 = Hotel2000.load(env.getContractAddress(), env.getWeb3j(), account, gasProvider);
 		try{
 			TransactionReceipt res = hotel2000.buildHotel(code, BigInteger.valueOf(nbRoom), price).send();
-			if(res.isStatusOK()){
-				logger.info("hotel " + code + " created");
+			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
+			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
+				logger.error("Hotel " + code +" created");
+			}else {
+				logger.error("fail create hotel " + code);
 			}
 		}catch(Exception e){
-			logger.error("fail create hotel", e);
+			logger.error("fail create hotel " + code, e);
 		}
 
 

@@ -18,8 +18,8 @@ public class ConsoleService implements CommandExec{
 
 	public ConsoleService(ConsoleEnv env, AccountService accountService){
 		this.env = env;
-		this.hotelService = new ConsoleHotelService(env, accountService);
 		this.utilService = new ConsoleUtilService(env, accountService);
+		this.hotelService = new ConsoleHotelService(env, accountService, utilService);
 		this.commandeParser = new CommandeParser();
 	}
 
