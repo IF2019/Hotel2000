@@ -15,12 +15,12 @@ library Lib {
 
 	struct Room {
 		bool isset; // Should be true
-		mapping(uint => uint) bookings; // Daystamp => BookingID
+		mapping(uint32 => uint32) bookings; // Daystamp => BookingID
 	}
 
 	struct Hotel {
 		address owner;
-		mapping(uint => Room) rooms;
+		mapping(uint32 => Room) rooms;
 		string  code;
 		string  title;
 		string  description;
