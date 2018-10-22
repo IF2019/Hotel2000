@@ -69,6 +69,33 @@ contract Hotel2000 {
 
         return (true, "");
     }
+    
+    // start and end are daystamps
+    function book(string _code, uint32 _start, uint32 _end, uint32 _room) public {
+        bool          bookable;
+        string memory message;
+        (bookable, message) = canBook(_code, _start, _end, _room);
+        require(bookable, message);
+        Lib.Hotel   storage hotel = hotels[_code];
+        Lib.Room    storage room  = hotel.rooms[_room];
+
+        uint32 booking_id = bookingIdInc++;
+        Lib.Booking storage booking = bookings[booking_id];
+        
+        booking.isset     = true;
+        booking.client    = msg.sender;
+        booking.hotelCode = hotel.code;
+        booking.price     = hotel.price;
+        booking.createdAt = now;
+        booking.id        = booking_id;
+        booking.start     = _start;
+        booking.end       = _end;
+        booking.room      = _room;
+        
+        for (uint32 i = _start; i < _end; i++) {
+            room.bookings[i] = booking_id;
+        }
+    }
 
 	function timestampToDaystamp(uint256 timestamp) pure public returns(uint32) {
 		return uint32(timestamp / 86400);
