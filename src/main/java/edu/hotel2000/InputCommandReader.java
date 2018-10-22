@@ -14,18 +14,18 @@ public class InputCommandReader extends Thread{
 	private BufferedReader buffer;
 	private CommandExecuter commandExecuter;
 
-	public InputCommandReader(InputStream in, CommandExecuter commandExecuter){
+	InputCommandReader(InputStream in, CommandExecuter commandExecuter){
 		buffer = new BufferedReader(new InputStreamReader(in));
 		this.commandExecuter = commandExecuter;
 	}
 
-	public void readCommand() throws IOException{
+	private void readCommand() throws IOException{
 		String line = buffer.readLine();
 
 		try{
 			commandExecuter.run(parse(line));
 		}catch(Exception e){
-			logger.error("Execute commande " + line + " failed");
+			logger.error("Execute commande " + line + " failed", e);
 		}
 
 	}

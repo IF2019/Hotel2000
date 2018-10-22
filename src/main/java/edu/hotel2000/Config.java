@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+@SuppressWarnings("WeakerAccess")
 public class Config{
 
 	private final static Logger logger = Logger.getLogger(Config.class);
@@ -51,8 +52,6 @@ public class Config{
 		isLoaded = true;
 	}
 
-
-	@SuppressWarnings("WeakerAccess")
 	public static String get(String key){
 		if(!isLoaded){
 			load();

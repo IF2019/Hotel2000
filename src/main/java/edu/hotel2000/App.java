@@ -37,7 +37,7 @@ public class App{
 
 	}
 
-	public static void showBalance(String account) throws IOException{
+	private static void showBalance(String account) throws IOException{
 		String address = AccountService.findFromConfigOption("deploy")
 				.map(Credentials::getAddress)
 				.orElseGet(() -> {
