@@ -38,7 +38,7 @@ class ConsoleHotelService{
 		Credentials account = accountService.findFromConfigOption(accountName)
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
 		Hotel2000 hotel2000 = Hotel2000.load(env.getContractAddress(), env.getWeb3j(), account, new DefaultGasProvider());
-		Tuple2<Boolean, String> res = hotel2000.canBuildHotel(code, BigInteger.valueOf(nbRoom), price).send();
+		Tuple2<Boolean, String> res = hotel2000.canCreateHotel(code, BigInteger.valueOf(nbRoom), price).send();
 		if(res.getValue1()){
 			logger.info(accountName + " can create " + code + " hotel");
 		}else{
@@ -53,7 +53,7 @@ class ConsoleHotelService{
 		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		Hotel2000 hotel2000 = Hotel2000.load(env.getContractAddress(), env.getWeb3j(), account, gasProvider);
 		try{
-			TransactionReceipt res = hotel2000.buildHotel(code, BigInteger.valueOf(nbRoom), price).send();
+			TransactionReceipt res = hotel2000.createHotel(code, BigInteger.valueOf(nbRoom), price).send();
 			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
 			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
 				logger.error("Hotel " + code +" created");
