@@ -3,7 +3,7 @@ import {Lib} from "./lib.sol";
 
 contract Hotel2000 {
 
-	uint bookingIdInc = 1;
+	uint32 bookingIdInc = 1;
 	mapping(uint => Lib.Booking) bookings; // ResevationID => Reservation
 	mapping(string => Lib.Hotel) hotels; // HotelCode  => Hotel
 
@@ -54,7 +54,7 @@ contract Hotel2000 {
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
-    // Requires daystamps
+    // start and end are daystamps
     function canBook(string _code, uint32 _start, uint32 _end, uint32 _room) view public returns(bool, string) {
         Lib.Hotel storage hotel = hotels[_code];
         require(hotel.isset, "hotel not found");
@@ -68,6 +68,33 @@ contract Hotel2000 {
         if (msg.sender.balance < hotel.price) return (false, "your balance isn't high enough");
 
         return (true, "");
+    }
+    
+    // start and end are daystamps
+    function book(string _code, uint32 _start, uint32 _end, uint32 _room) public {
+        bool          bookable;
+        string memory message;
+        (bookable, message) = canBook(_code, _start, _end, _room);
+        require(bookable, message);
+        Lib.Hotel   storage hotel = hotels[_code];
+        Lib.Room    storage room  = hotel.rooms[_room];
+
+        uint32 booking_id = bookingIdInc++;
+        Lib.Booking storage booking = bookings[booking_id];
+        
+        booking.isset     = true;
+        booking.client    = msg.sender;
+        booking.hotelCode = hotel.code;
+        booking.price     = hotel.price;
+        booking.createdAt = now;
+        booking.id        = booking_id;
+        booking.start     = _start;
+        booking.end       = _end;
+        booking.room      = _room;
+        
+        for (uint32 i = _start; i < _end; i++) {
+            room.bookings[i] = booking_id;
+        }
     }
 
 	function timestampToDaystamp(uint256 timestamp) pure public returns(uint32) {
