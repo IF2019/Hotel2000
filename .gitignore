@@ -86,3 +86,7 @@ buildNumber.properties
 **/config-local.properties
 blockchain
 src/main/java/edu/hotel2000/contract
+
+.settings/
+.classpath
+.project
