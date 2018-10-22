@@ -13,17 +13,17 @@ import org.web3j.tx.gas.DefaultGasProvider;
 import java.math.BigInteger;
 
 @AllArgsConstructor
-public class ConsoleHotelService{
+class ConsoleHotelService{
 
 	private static final Logger logger = Logger.getLogger(ConsoleHotelService.class);
 
 	private ConsoleEnv env;
 	private AccountService accountService;
 
-	public void infoHotel(String accountName, String code) throws Exception{
+	void infoHotel(String accountName, String code) throws Exception{
 		Credentials account = accountService.findFromConfigOption(accountName)
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
-		Hotel2000 hotel2000 = Hotel2000.load(env.getCurrantContract(), env.getWeb3j(), account, new DefaultGasProvider());
+		Hotel2000 hotel2000 = Hotel2000.load(env.getContractAddress(), env.getWeb3j(), account, new DefaultGasProvider());
 		try{
 			Hotel hotel = new Hotel(hotel2000.getHotel(code).send());
 			logger.info(hotel.toString());
@@ -33,10 +33,10 @@ public class ConsoleHotelService{
 	}
 
 
-	public void canCreateHotel(String accountName, String code, int nbRoom, BigInteger price) throws Exception{
+	void canCreateHotel(String accountName, String code, int nbRoom, BigInteger price) throws Exception{
 		Credentials account = accountService.findFromConfigOption(accountName)
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
-		Hotel2000 hotel2000 = Hotel2000.load(env.getCurrantContract(), env.getWeb3j(), account, new DefaultGasProvider());
+		Hotel2000 hotel2000 = Hotel2000.load(env.getContractAddress(), env.getWeb3j(), account, new DefaultGasProvider());
 		Tuple2<Boolean, String> res = hotel2000.canBuildHotel(code, BigInteger.valueOf(nbRoom), price).send();
 		if(res.getValue1()){
 			logger.info(accountName + " can create " + code + " hotel");
@@ -46,10 +46,10 @@ public class ConsoleHotelService{
 
 	}
 
-	public void createHotel(String accountName, String code, int nbRoom, BigInteger price) throws Exception{
+	void createHotel(String accountName, String code, int nbRoom, BigInteger price) throws Exception{
 		Credentials account = accountService.findFromConfigOption(accountName)
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
-		Hotel2000 hotel2000 = Hotel2000.load(env.getCurrantContract(), env.getWeb3j(), account, new DefaultGasProvider());
+		Hotel2000 hotel2000 = Hotel2000.load(env.getContractAddress(), env.getWeb3j(), account, new DefaultGasProvider());
 		try{
 			TransactionReceipt res = hotel2000.buildHotel(code, BigInteger.valueOf(nbRoom), price).send();
 			if(res.isStatusOK()){

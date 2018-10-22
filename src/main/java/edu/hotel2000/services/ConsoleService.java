@@ -5,82 +5,124 @@ import edu.hotel2000.models.ConsoleEnv;
 import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
+import java.util.Map;
 
-public class ConsoleService implements CommandExecuter{
+public class ConsoleService implements CommandExec{
 
 	private static final Logger logger = Logger.getLogger(ConsoleService.class);
 
-	ConsoleEnv env;
-	ConsoleHotelService hotelService;
-	ConsoleUtilService utilService;
+	private ConsoleEnv env;
+	private ConsoleHotelService hotelService;
+	private ConsoleUtilService utilService;
+	private CommandeParser commandeParser;
 
 	public ConsoleService(ConsoleEnv env, AccountService accountService){
 		this.env = env;
 		this.hotelService = new ConsoleHotelService(env, accountService);
 		this.utilService = new ConsoleUtilService(env, accountService);
+		this.commandeParser = new CommandeParser();
 	}
 
+
 	@Override
-	public void evalCommande(String[] commande) throws Exception{
+	public void evalCommand(String[] commande) throws Exception{
 		logger.debug("Run commande : " + String.join(" ", commande));
 
 		String help = Config.get("hotel2000.commands.help");
 		if(commande[0].isEmpty()) return;
-		if(commande[0].equals("?")
-				|| commande[0].equalsIgnoreCase("h")
-				|| commande[0].equalsIgnoreCase("help")
-		){
-			if(commande.length > 1){
-				System.out.println(Config.get("hotel2000.commands." + commande[1] + ".help", "Command  '" + commande[1] + "' didn't have help"));
-				return;
-			}
-			System.out.println(help);
-			return;
-		}else if(commande[0].equalsIgnoreCase("balance")){
-			if(commande.length < 2){
-				System.out.println(Config.get("hotel2000.commands.balance.help", help));
-				return;
-			}
-			utilService.showBalance(commande[1]);
-			return;
-		}else if(commande[0].equalsIgnoreCase("hotel")){
-			help = Config.get("hotel2000.commands.hotel.help", help);
-			if(commande.length < 2){
-				System.out.println();
-				return;
-			}else if(commande[1].equalsIgnoreCase("create")){
-				if(commande.length < 6){
-					System.out.println(Config.get("hotel2000.commands.hotel.create.help", help));
-					return;
-				}
-				hotelService.createHotel(commande[2], commande[3], Integer.parseInt(commande[4]), new BigInteger(commande[5]));
-				return;
-			}else if(commande[1].equalsIgnoreCase("canCreate")){
-				if(commande.length < 6){
-					System.out.println(Config.get("hotel2000.commands.hotel.create.help", help));
-					return;
-				}
-				hotelService.canCreateHotel(commande[2], commande[3], Integer.parseInt(commande[4]), new BigInteger(commande[5]));
-				return;
-			}else if(commande[1].equalsIgnoreCase("info")){
-				if(commande.length < 4){
-					System.out.println(Config.get("hotel2000.commands.hotel.create.help", help));
-					return;
-				}
-//				infoHotel(commande[2], commande[3]);
-				return;
-			}
-		}else if(commande[0].equalsIgnoreCase("contract")){
-			if(commande.length > 1){
-				env.setCurrantContract(commande[1]);
-				logger.info("Set Current contract value to : " + commande[1]);
 
-			}else {
-				logger.info("Current contract is: " + env.getCurrantContract());
+		Map<String, String> params;
+		String acc = env.getAccountName();
+
+
+		// Help
+		params = commandeParser.parse(commande, "help|? [commande]").orElse(null);
+		if(params != null){
+			if(params.containsKey("commande")){
+				System.out.println(Config.get("hotel2000.commands." + commande[1] + ".help", "Command  '" + commande[1] + "' didn't have help"));
+			}else{
+				System.out.println(help);
 			}
 			return;
 		}
+
+
+		// Ballance
+		params = commandeParser.parse(commande, "balance|b [account]=" + acc).orElse(null);
+		if(params != null){
+			utilService.showBalance(params.get("account"));
+			return;
+		}
+
+
+		// Hotel canCreate
+		params = commandeParser.parse(commande, "hotel|h canCreate|cc <code> <nbRoom> <price> [account]=" + acc).orElse(null);
+		if(params != null){
+			hotelService.canCreateHotel(
+					params.get("account"),
+					params.get("code"),
+					Integer.parseInt(params.get("nbRoom")),
+					new BigInteger(params.get("price"))
+			);
+			return;
+		}
+
+
+		// Hotel create
+		params = commandeParser.parse(commande, "hotel|h create|c <code> <nbRoom> <price> [account]=" + acc).orElse(null);
+		if(params != null){
+			hotelService.createHotel(
+					params.get("account"),
+					params.get("code"),
+					Integer.parseInt(params.get("nbRoom")),
+					new BigInteger(params.get("price"))
+			);
+			return;
+		}
+
+
+		// Hotel info
+		params = commandeParser.parse(commande, "hotel|h info|i <code> [account]=" + acc).orElse(null);
+		if(params != null){
+			hotelService.infoHotel(
+					params.get("account"),
+					params.get("code")
+			);
+			return;
+		}
+
+
+		// Contract
+		params = commandeParser.parse(commande, "contract|c [newValue]").orElse(null);
+		if(params != null){
+			if(params.containsKey("newValue")){
+				env.setContractAddress(params.get("newValue"));
+				logger.info("Set Current contract value to : " + params.get("newValue"));
+			}else{
+				logger.info("Current contract is: " + env.getContractAddress());
+			}
+			return;
+		}
+
+
+		// Account
+		params = commandeParser.parse(commande, "account|a|use [newValue]").orElse(null);
+		if(params != null){
+			if(params.containsKey("newValue")){
+				env.setAccountName(params.get("newValue"));
+				logger.info("Set current account value to : " + params.get("newValue"));
+			}else{
+				logger.info("Current account is: " + acc);
+			}
+			return;
+		}
+
 		System.out.println("Command '" + commande[0] + "' unknown");
 		System.out.println(help);
+	}
+
+	@Override
+	public void onStart(){
+
 	}
 }

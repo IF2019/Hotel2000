@@ -8,8 +8,9 @@ import org.web3j.protocol.Web3j;
 @Getter
 @Setter
 public class ConsoleEnv{
-	@Getter
-	@Setter
+
 	private Web3j web3j;
-	private String currantContract;
+	private String contractAddress;
+	private String accountName;
+
 }

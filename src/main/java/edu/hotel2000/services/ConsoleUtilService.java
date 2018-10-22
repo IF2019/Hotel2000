@@ -18,8 +18,6 @@ public class ConsoleUtilService{
 	private ConsoleEnv env;
 	private AccountService accountService;
 
-
-
 	public void showBalance(String accountName) throws IOException, CipherException{
 		String address = accountService.getAddress(accountName)
 				.orElseGet(() -> {
