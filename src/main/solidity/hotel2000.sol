@@ -18,7 +18,7 @@ contract Hotel2000 {
 		hotel.nbRooms   = _nbRooms;
 		hotel.createdAt = now;
 		hotel.price     = _price;
-		for (uint i = 0; i < _nbRooms; i++) {
+		for (uint32 i = 0; i < _nbRooms; i++) {
 			initRoom(hotel.rooms[i]);
 		}
 		hotel.isset = true;
@@ -56,14 +56,14 @@ contract Hotel2000 {
 
     // Requires daystamps
     function canBook(string _code, uint32 _start, uint32 _end, uint32 _room) view public returns(bool, string) {
-        Lib.Hotel hotel = hotels[_code];
+        Lib.Hotel storage hotel = hotels[_code];
         require(hotel.isset, "hotel not found");
-        Lib.Room room = hotels[_code].rooms[_room];
+        Lib.Room storage room = hotels[_code].rooms[_room];
         require(room.isset, "room not found");
         if (_start >= _end) return (false, "the booking start must happen before the booking end");
-        for (int i = _start; i <= _end; i++) {
+        for (uint32 i = _start; i <= _end; i++) {
             // @IMPROVE add the booking days
-            if (room.bookings[i].isset) return (false, "the room has already been booked");
+            if (bookings[room.bookings[i]].isset) return (false, "the room has already been booked");
         }
         if (msg.sender.balance < hotel.price) return (false, "your balance isn't high enough");
 
