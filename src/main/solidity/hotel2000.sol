@@ -13,7 +13,7 @@ contract Hotel2000 {
 		room.isset = true;
 	}
 
-	function initHotel(Lib.Hotel storage hotel, string _code, uint _nbRooms, uint _price) internal {
+	function initHotel(Lib.Hotel storage hotel, string _code, uint32 _nbRooms, uint256 _price) internal {
 		hotel.code      = _code;
 		hotel.nbRooms   = _nbRooms;
 		hotel.createdAt = now;
@@ -24,9 +24,9 @@ contract Hotel2000 {
 		hotel.isset = true;
 	}
 
-	function canBuildHotel(string _code, uint _nbRooms, uint _price) public view returns(bool, string) {
+	function canBuildHotel(string _code, uint32 _nbRooms, uint256 _price) public view returns(bool, string) {
 		if (bytes(_code).length < 2 || bytes(_code).length > 8)
-            return (false, "the code must be between 2 and 8 characters long");
+			return (false, "the code must be between 2 and 8 characters long");
 		if (hotels[_code].isset) return (false, "this code already exists");
 		if (_nbRooms < 1)     return (false, "the hotel must have more than 1 room");
 		if (_nbRooms > 10000) return (false, "the hotel must have less than 10_000 rooms");
@@ -34,19 +34,19 @@ contract Hotel2000 {
 		return (true, "");
 	}
 
-	function getHotel(string _code) public view returns(string, string, string, uint, address, uint) {
+	function getHotel(string _code) public view returns(string, string, string, uint256, address, uint32) {
 		require(hotels[_code].isset, "hotel not found");
-        return(
-            hotels[_code].code,
-            hotels[_code].title,
-            hotels[_code].description,
-            hotels[_code].price,
-            hotels[_code].owner,
-            hotels[_code].nbRooms
-        );
+		return(
+			hotels[_code].code,
+			hotels[_code].title,
+			hotels[_code].description,
+			hotels[_code].price,
+			hotels[_code].owner,
+			hotels[_code].nbRooms
+		);
 	}
 
-	function buildHotel(string _code, uint _nbRooms, uint _price) public {
+	function buildHotel(string _code, uint32 _nbRooms, uint256 _price) public {
 		bool          canBuild;
 		string memory message;
 		(canBuild, message) = canBuildHotel(_code, _nbRooms, _price);
@@ -54,8 +54,8 @@ contract Hotel2000 {
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
-	function timestampToDaystamp(uint timestamp) pure public returns(uint) {
-		return timestamp / 86400;
+	function timestampToDaystamp(uint256 timestamp) pure public returns(uint32) {
+		return uint32(timestamp / 86400);
 	}
 
 	function test() public pure returns (string) {

@@ -2,15 +2,15 @@ pragma solidity ^0.4.17;
 
 library Lib {
 	struct Booking {
-		bool    isset;      // Should be true
-		uint    id;
-		uint    createdAt;  // Timestamp
-		uint    start;      // Daystamp
-		uint    end;        // Daystamp
-		string  hotelCode;
-		uint    room;       // Index
-		uint    price;
 		address client;
+		string  hotelCode;
+		uint256 price;
+		uint256 createdAt;  // Timestamp
+		uint32  id;
+		uint32  start;      // Daystamp
+		uint32  end;        // Daystamp
+		uint32  room;       // Index
+		bool    isset;      // Should be true
 	}
 
 	struct Room {
@@ -19,14 +19,14 @@ library Lib {
 	}
 
 	struct Hotel {
-		bool    isset;      // Should be true
-		string  code;
-		uint    createdAt;  // Timestamp
-		string  title;
-		string  description;
-		uint    price;      // Price per night
-		uint    nbRooms;
 		address owner;
 		mapping(uint => Room) rooms;
+		string  code;
+		string  title;
+		string  description;
+		uint256 price;      // Price per night
+		uint256 createdAt;  // Timestamp
+		uint32  nbRooms;
+		bool    isset;      // Should be true
 	}
 }
