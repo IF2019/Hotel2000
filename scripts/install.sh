@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# run this in sudo mode: sudo bash ./01-install.sh
+# evalCommande this in sudo mode: sudo bash ./01-install.sh
 
 apt-get update
 apt-get install -y software-properties-common

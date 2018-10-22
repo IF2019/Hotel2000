@@ -1,5 +1,6 @@
 package edu.hotel2000;
 
+import edu.hotel2000.services.CommandExecuter;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -23,7 +24,7 @@ public class InputCommandReader extends Thread{
 		String line = buffer.readLine();
 
 		try{
-			commandExecuter.run(parse(line));
+			commandExecuter.evalCommande(parse(line));
 		}catch(Exception e){
 			logger.error("Execute commande " + line + " failed", e);
 		}
