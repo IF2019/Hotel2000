@@ -54,7 +54,7 @@ contract Hotel2000 {
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
-    // Requires daystamps
+    // start and end are daystamps
     function canBook(string _code, uint32 _start, uint32 _end, uint32 _room) view public returns(bool, string) {
         Lib.Hotel storage hotel = hotels[_code];
         require(hotel.isset, "hotel not found");
