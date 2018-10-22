@@ -54,6 +54,22 @@ contract Hotel2000 {
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
+    // Requires daystamps
+    function canBook(string _code, uint32 _start, uint32 _end, uint32 _room) view public returns(bool, string) {
+        Lib.Hotel hotel = hotels[_code];
+        require(hotel.isset, "hotel not found");
+        Lib.Room room = hotels[_code].rooms[_room];
+        require(room.isset, "room not found");
+        if (_start >= _end) return (false, "the booking start must happen before the booking end");
+        for (int i = _start; i <= _end; i++) {
+            // @IMPROVE add the booking days
+            if (room.bookings[i].isset) return (false, "the room has already been booked");
+        }
+        if (msg.sender.balance < hotel.price) return (false, "your balance isn't high enough");
+
+        return (true, "");
+    }
+
 	function timestampToDaystamp(uint timestamp) pure public returns(uint) {
 		return timestamp / 86400;
 	}
