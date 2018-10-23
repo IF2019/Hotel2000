@@ -138,7 +138,7 @@ contract Hotel2000 {
 
 		require(msg.sender == hotel.owner, "you can only withdraw if you are the hotel owner");
 
-		for (uint32 i = 0; hotel.active_bookings[i] != 0; ) {
+		for (uint32 i = 0; i < hotel.active_bookings.length; ) {
 			Lib.Booking memory booking;
 			booking = bookings[hotel.active_bookings[i]];
 			if (booking.end < timestampToDaystamp(now)) {
