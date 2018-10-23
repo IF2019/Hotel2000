@@ -21,6 +21,7 @@ contract Hotel2000 {
 		for (uint32 i = 0; i < _nbRooms; i++) {
 			initRoom(hotel.rooms[i]);
 		}
+        hotel.owner = msg.sender;
 		hotel.isset = true;
 	}
 
