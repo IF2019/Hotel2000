@@ -90,3 +90,4 @@ src/main/java/edu/hotel2000/contract
 .settings/
 .classpath
 .project
+.factorypath
