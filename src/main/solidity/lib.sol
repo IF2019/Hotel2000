@@ -20,17 +20,14 @@ library Lib {
 
 	struct Hotel {
 		address owner;
-		mapping(uint32 => Room) rooms;
-        mapping(uint32 => uint32) active_bookings;
-        mapping(uint32 => uint32) bookings;
+		Room[] rooms;
+        uint32[] active_bookings;
+        uint32[] bookings;
 		string  code;
 		string  title;
 		string  description;
 		uint256 price;      // Price per night
 		uint256 createdAt;  // Timestamp
-		uint32  nbRooms;
-        uint32  nbActiveBookings;
-        uint32  nbBookings;
 		bool    isset;      // Should be true
 	}
 }

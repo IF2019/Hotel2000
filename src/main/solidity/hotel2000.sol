@@ -16,9 +16,9 @@ contract Hotel2000 {
 
 	function initHotel(Lib.Hotel storage hotel, string _code, uint32 _nbRooms, uint256 _price) internal {
 		hotel.code      = _code;
-		hotel.nbRooms   = _nbRooms;
 		hotel.createdAt = now;
 		hotel.price     = _price;
+        hotel.rooms.length = _nbRooms;
 		for (uint32 i = 0; i < _nbRooms; i++) {
 			initRoom(hotel.rooms[i]);
 		}
@@ -39,12 +39,12 @@ contract Hotel2000 {
 	function getHotel(string _code) public view returns(string, string, string, uint256, address, uint32) {
 		require(hotels[_code].isset, "hotel not found");
 		return(
-		hotels[_code].code,
-		hotels[_code].title,
-		hotels[_code].description,
-		hotels[_code].price,
-		hotels[_code].owner,
-		hotels[_code].nbRooms
+			hotels[_code].code,
+			hotels[_code].title,
+			hotels[_code].description,
+			hotels[_code].price,
+			hotels[_code].owner,
+			uint32(hotels[_code].rooms.length)
 		);
 	}
 
@@ -112,10 +112,10 @@ contract Hotel2000 {
 		uint32 booking_id = bookingIdInc++;
 		Lib.Booking storage booking = bookings[booking_id];
 
-		hotel.nbActiveBookings++;
-		hotel.active_bookings[hotel.nbActiveBookings-1] = booking_id;
-		hotel.nbBookings++;
-		hotel.bookings[hotel.nbBookings-1] = booking_id;
+		hotel.active_bookings.length++;
+		hotel.active_bookings[hotel.active_bookings.length-1] = booking_id;
+		hotel.bookings.length++;
+		hotel.bookings[hotel.bookings.length-1] = booking_id;
 
 		booking.isset     = true;
 		booking.client    = msg.sender;
@@ -143,7 +143,7 @@ contract Hotel2000 {
 			booking = bookings[hotel.active_bookings[i]];
 			if (booking.end < timestampToDaystamp(now)) {
 				transfer += booking.price;
-				hotel.active_bookings[i] = hotel.active_bookings[--hotel.nbActiveBookings];
+				hotel.active_bookings[i] = hotel.active_bookings[--hotel.active_bookings.length];
 			} else {
 				i++;
 			}
