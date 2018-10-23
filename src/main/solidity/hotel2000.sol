@@ -55,9 +55,11 @@ contract Hotel2000 {
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
-    // @TODO change to timestamps for easier "speeding up of time" in testing
     // start and end are daystamps
-    function canBook(string _code, uint32 _start, uint32 _end, uint32 _room) view public returns(bool, string) {
+    function canBook(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) view public returns(bool, string) {
+        uint32 _start = timestampToDaystamp(_start_d);
+        uint32 _end = timestampToDaystamp(_end_d);
+
         bool          bookable;
         string memory message;
         (bookable, message) = canBook_internal(_code, _start, _end, _room);
@@ -66,9 +68,11 @@ contract Hotel2000 {
         return (true, "you can book this room");
     }
 
-    // @TODO change to timestamps for easier "speeding up of time" in testing
     // start and end are daystamps
-    function canBook_internal(string _code, uint32 _start, uint32 _end, uint32 _room) view internal returns(bool, string) {
+    function canBook_internal(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) view internal returns(bool, string) {
+        uint32 _start = timestampToDaystamp(_start_d);
+        uint32 _end = timestampToDaystamp(_end_d);
+
         Lib.Hotel storage hotel = hotels[_code];
         require(hotel.isset, "hotel not found");
         Lib.Room storage room = hotels[_code].rooms[_room];
@@ -82,9 +86,11 @@ contract Hotel2000 {
         return (true, "");
     }
     
-    // @TODO change to timestamps for easier "speeding up of time" in testing
     // start and end are daystamps
-    function book(string _code, uint32 _start, uint32 _end, uint32 _room) public payable {
+    function book(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) public payable {
+        uint32 _start = timestampToDaystamp(_start_d);
+        uint32 _end = timestampToDaystamp(_end_d);
+
         bool          bookable;
         string memory message;
         (bookable, message) = canBook_internal(_code, _start, _end, _room);
