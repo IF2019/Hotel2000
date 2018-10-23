@@ -120,6 +120,23 @@ contract Hotel2000 {
             room.bookings[i] = booking_id;
         }
     }
+    
+    function withdraw(string _code) public {
+        Lib.Hotel   storage hotel = hotels[_code];
+        uint256             transfer = 0;
+        for (uint32 i = 0; hotel.active_bookings[i] != 0; ) {
+            Lib.Booking memory booking;
+            booking = bookings[hotel.active_bookings[i]];
+            if (booking.end < timestampToDaystamp(now)) {
+                transfer += booking.price;
+                hotel.active_bookings[i] = hotel.active_bookings[--hotel.nbActiveBookings];
+            } else {
+                i++;
+            }
+        }
+
+        msg.sender.transfer(transfer);
+    }
 
     function editDescription(string _code, string _description) public {
         Lib.Hotel storage hotel = hotels[_code];
