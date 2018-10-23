@@ -105,10 +105,7 @@ contract Hotel2000 {
         Lib.Hotel   storage hotel = hotels[_code];
         Lib.Room    storage room  = hotel.rooms[_room];
         
-        if (msg.value < hotel.price) {
-            msg.sender.transfer(msg.value);
-            return;
-        }
+        require(msg.value >= hotel.price, "you must send enough money to pay for the booking");
 
         uint32 booking_id = bookingIdInc++;
         Lib.Booking storage booking = bookings[booking_id];
