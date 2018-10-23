@@ -4,8 +4,8 @@ import {Lib} from "./lib.sol";
 contract Hotel2000 {
 
 	uint32 bookingIdInc = 1;
-	mapping(uint => Lib.Booking) bookings; // ResevationID => Reservation
-	mapping(string => Lib.Hotel) hotels; // HotelCode  => Hotel
+	mapping(uint    => Lib.Booking) bookings; // ResevationID => Reservation
+	mapping(string  => Lib.Hotel) hotels; // HotelCode  => Hotel
 
 	constructor() public {}
 
@@ -54,6 +54,7 @@ contract Hotel2000 {
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
+    // @TODO change to timestamps for easier "speeding up of time" in testing
     // start and end are daystamps
     function canBook(string _code, uint32 _start, uint32 _end, uint32 _room) view public returns(bool, string) {
         bool          bookable;
@@ -64,6 +65,7 @@ contract Hotel2000 {
         return (true, "you can book this room");
     }
 
+    // @TODO change to timestamps for easier "speeding up of time" in testing
     // start and end are daystamps
     function canBook_internal(string _code, uint32 _start, uint32 _end, uint32 _room) view internal returns(bool, string) {
         Lib.Hotel storage hotel = hotels[_code];
@@ -79,6 +81,7 @@ contract Hotel2000 {
         return (true, "");
     }
     
+    // @TODO change to timestamps for easier "speeding up of time" in testing
     // start and end are daystamps
     function book(string _code, uint32 _start, uint32 _end, uint32 _room) public payable {
         bool          bookable;
