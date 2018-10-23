@@ -133,6 +133,9 @@ contract Hotel2000 {
     function withdraw(string _code) public {
         Lib.Hotel   storage hotel = hotels[_code];
         uint256             transfer = 0;
+
+        require(msg.sender == hotel.owner, "you can only withdraw if you are the hotel owner");
+
         for (uint32 i = 0; hotel.active_bookings[i] != 0; ) {
             Lib.Booking memory booking;
             booking = bookings[hotel.active_bookings[i]];
