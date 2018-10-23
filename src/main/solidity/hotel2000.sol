@@ -57,12 +57,9 @@ contract Hotel2000 {
 
     // start and end are timestamps
     function canBook(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) view public returns(bool, string) {
-        uint32 _start = timestampToDaystamp(_start_d);
-        uint32 _end = timestampToDaystamp(_end_d);
-
         bool          bookable;
         string memory message;
-        (bookable, message) = canBook_internal(_code, _start, _end, _room);
+        (bookable, message) = canBook_internal(_code, _start_d, _end_d, _room);
         if (!bookable) return (bookable, message);
         if (msg.sender.balance < hotels[_code].price) return (false, "your balance isn't high enough");
         return (true, "you can book this room");
