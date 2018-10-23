@@ -68,7 +68,16 @@ contract Hotel2000 {
         return (true, "you can book this room");
     }
 
-    // start and end are daystamps
+    function getBookingPrice(string _code, uint256 _start_d, uint256 _end_d) view public returns(bool, uint256) {
+        uint32 _start = timestampToDaystamp(_start_d);
+        uint32 _end = timestampToDaystamp(_end_d);
+        
+        Lib.Hotel storage hotel = hotels[_code];
+        if (!hotel.isset) return (false, 0);
+        return (true, (_start - _end) * hotels[_code].price);
+    }
+
+    // start and end are timestamps
     function canBook_internal(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) view internal returns(bool, string) {
         uint32 _start = timestampToDaystamp(_start_d);
         uint32 _end = timestampToDaystamp(_end_d);
