@@ -74,7 +74,7 @@ contract Hotel2000 {
         
         Lib.Hotel storage hotel = hotels[_code];
         if (!hotel.isset) return (false, 0);
-        return (true, (_start - _end) * hotels[_code].price);
+        return (true, (_end - _start) * hotels[_code].price);
     }
 
     // start and end are timestamps
