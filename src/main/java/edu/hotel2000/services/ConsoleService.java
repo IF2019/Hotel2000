@@ -1,6 +1,7 @@
 package edu.hotel2000.services;
 
 import edu.hotel2000.Config;
+import edu.hotel2000.Util;
 import edu.hotel2000.models.ConsoleEnv;
 import org.apache.log4j.Logger;
 
@@ -15,12 +16,14 @@ public class ConsoleService implements CommandExec{
 	private ConsoleHotelService hotelService;
 	private ConsoleUtilService utilService;
 	private CommandeParser commandeParser;
+	private ConsoleClientService clientService;
 
 	public ConsoleService(ConsoleEnv env, AccountService accountService){
 		this.env = env;
 		this.utilService = new ConsoleUtilService(env, accountService);
 		this.hotelService = new ConsoleHotelService(env, accountService, utilService);
 		this.commandeParser = new CommandeParser();
+		this.clientService = new ConsoleClientService(env, accountService, utilService);
 	}
 
 
@@ -90,6 +93,29 @@ public class ConsoleService implements CommandExec{
 			);
 			return;
 		}
+
+
+		// Client canBook
+		params = commandeParser.parse(commande, "client|c canBook|cb <code> <start> <end> <room> [account]=" + acc).orElse(null);
+		if(params != null){
+			clientService.canBook(
+					params.get("account"),
+					params.get("code"),
+					Util.computeData("start"),
+					Util.computeData("end"),
+					Integer.parseInt(params.get("room"))
+			);
+			return;
+		}
+
+
+		// Client book
+		params = commandeParser.parse(commande, "client|c book|b <code> <start> <end> <room> [account]=" + acc).orElse(null);
+		if(params != null){
+			logger.info("Not implemented Iet");
+			return; 	
+		}
+
 
 
 		// Contract
