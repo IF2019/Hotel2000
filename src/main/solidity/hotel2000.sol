@@ -55,7 +55,7 @@ contract Hotel2000 {
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
-    // start and end are daystamps
+    // start and end are timestamps
     function canBook(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) view public returns(bool, string) {
         uint32 _start = timestampToDaystamp(_start_d);
         uint32 _end = timestampToDaystamp(_end_d);
@@ -86,7 +86,7 @@ contract Hotel2000 {
         return (true, "");
     }
     
-    // start and end are daystamps
+    // start and end are timestamps
     function book(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) public payable {
         uint32 _start = timestampToDaystamp(_start_d);
         uint32 _end = timestampToDaystamp(_end_d);
