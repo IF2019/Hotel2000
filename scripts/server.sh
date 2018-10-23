@@ -9,6 +9,6 @@ BLOCKCHAIN_DIR=blockchain
 
 cd $( dirname "${BASH_SOURCE[0]}" )/../${BLOCKCHAIN_DIR}/${BLOCKCHAIN_NAME}
 
-echo "geth --datadir=./ --rpcapi personal,db,eth,net,web3 --rpc --etherbase $ACCOUNT --minerthreads=$THREAD --mine console"
+echo "geth  --etherbase $ACCOUNT --datadir=./ --rpcapi personal,db,eth,net,web3 --rpc --ipcdisable --minerthreads=$THREAD --mine console"
 
-geth  --etherbase $ACCOUNT --datadir=./ --rpcapi personal,db,eth,net,web3 --rpc --minerthreads=$THREAD --mine console
+geth --etherbase $ACCOUNT --datadir=./ --rpcapi personal,db,eth,net,web3 --rpc --nodiscover --wsorigins '*' --ipcdisable --minerthreads=$THREAD --mine console

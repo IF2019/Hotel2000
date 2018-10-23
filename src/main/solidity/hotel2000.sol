@@ -24,7 +24,7 @@ contract Hotel2000 {
 		hotel.isset = true;
 	}
 
-	function canBuildHotel(string _code, uint32 _nbRooms, uint256 _price) public view returns(bool, string) {
+	function canCreateHotel(string _code, uint32 _nbRooms, uint256 _price) public view returns(bool, string) {
 		if (bytes(_code).length < 2 || bytes(_code).length > 8)
 			return (false, "the code must be between 2 and 8 characters long");
 		if (hotels[_code].isset) return (false, "this code already exists");
@@ -46,11 +46,11 @@ contract Hotel2000 {
 		);
 	}
 
-	function buildHotel(string _code, uint32 _nbRooms, uint256 _price) public {
-		bool          canBuild;
+	function createHotel(string _code, uint32 _nbRooms, uint256 _price) public {
+		bool          canCreate;
 		string memory message;
-		(canBuild, message) = canBuildHotel(_code, _nbRooms, _price);
-		require(canBuild, message);
+		(canCreate, message) = canCreateHotel(_code, _nbRooms, _price);
+		require(canCreate, message);
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
