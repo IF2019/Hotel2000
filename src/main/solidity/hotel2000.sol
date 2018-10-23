@@ -114,6 +114,12 @@ contract Hotel2000 {
         }
     }
 
+    function editDescription(string _code, string _description) public {
+        Lib.Hotel storage hotel = hotels[_code];
+        require(msg.sender == hotel.owner, "not owner");
+        hotel.description = _description;
+    }
+
 	function timestampToDaystamp(uint256 timestamp) pure public returns(uint32) {
 		return uint32(timestamp / 86400);
 	}
