@@ -95,6 +95,15 @@ public class ConsoleService implements CommandExec{
 			return;
 		}
 
+		params = commandeParser.parse(commande, "hotel|h withdraw|w <code> [account]="+acc).orElse(null);
+		if(params != null){
+			hotelService.withdraw(
+					params.get("account"),
+					params.get("code")
+			);
+			return;
+		}
+
 
 		// Client canBook
 		params = commandeParser.parse(commande, "client|c canBook|cb <code> <start> <end> <room> [account]=" + acc).orElse(null);
