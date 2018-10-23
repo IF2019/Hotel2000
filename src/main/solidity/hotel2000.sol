@@ -100,7 +100,12 @@ contract Hotel2000 {
 
         uint32 booking_id = bookingIdInc++;
         Lib.Booking storage booking = bookings[booking_id];
-        
+
+        hotel.nbActiveBookings++;
+        hotel.active_bookings[hotel.nbActiveBookings-1] = booking_id;
+        hotel.nbBookings++;
+        hotel.bookings[hotel.nbBookings-1] = booking_id;
+
         booking.isset     = true;
         booking.client    = msg.sender;
         booking.hotelCode = hotel.code;
