@@ -116,8 +116,6 @@ contract Hotel2000 {
         booking.end       = _end;
         booking.room      = _room;
         
-        // @TODO Add timeout events to refund or send money to the owner
-
         for (uint32 i = _start; i < _end; i++) {
             room.bookings[i] = booking_id;
         }
