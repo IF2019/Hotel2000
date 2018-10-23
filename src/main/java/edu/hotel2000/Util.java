@@ -8,15 +8,15 @@ import java.util.regex.Pattern;
 
 public class Util{
 
-	private static Pattern dateOffset= Pattern.compile("^(\\+?)([0-9]+)([h]?)$");
+	private static Pattern dateOffset= Pattern.compile("^(\\+?)([0-9]+)(d?)$");
 
-	public static int timeInDatestemp = 8640;
+	public static int timeInDatestemp = 86400;
 
 	public static BigInteger computeData(String date) throws ParseException{
 		Matcher matcher = dateOffset.matcher(date);
 		if(matcher.matches()){
 			long time = Integer.parseInt(matcher.group(2));
-			if(matcher.group(3).equals("h")){
+			if(matcher.group(3).equals("d")){
 				time *= timeInDatestemp;
 			}
 			if(matcher.group(1).equals("+")){

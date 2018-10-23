@@ -51,7 +51,7 @@ public class App{
 			logger.info("Contract Hotel2000 deployed! ContractAddress: " + res.getContractAddress());
 			hotel2000ContractAddress = res.getContractAddress();
 		}
-		logger.info(TEST_ACOUNT + " load Hotel2000 contract: " + hotel2000ContractAddress);
+		logger.info("Account \"" + TEST_ACOUNT + "\" load Hotel2000 contract: " + hotel2000ContractAddress);
 		hotel2000 = Hotel2000.load(hotel2000ContractAddress, web3j, credentialsTest, new DefaultGasProvider());
 		logger.info("test: " + hotel2000.test().send());
 

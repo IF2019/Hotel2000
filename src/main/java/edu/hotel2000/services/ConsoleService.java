@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.Optional;
 
 public class ConsoleService implements CommandExec{
 
@@ -50,7 +51,7 @@ public class ConsoleService implements CommandExec{
 		}
 
 
-		// Ballance
+		// Balance
 		params = commandeParser.parse(commande, "balance|b [account]=" + acc).orElse(null);
 		if(params != null){
 			utilService.showBalance(params.get("account"));
@@ -101,8 +102,8 @@ public class ConsoleService implements CommandExec{
 			clientService.canBook(
 					params.get("account"),
 					params.get("code"),
-					Util.computeData("start"),
-					Util.computeData("end"),
+					Util.computeData(params.get("start")),
+					Util.computeData(params.get("end")),
 					Integer.parseInt(params.get("room"))
 			);
 			return;
@@ -110,10 +111,32 @@ public class ConsoleService implements CommandExec{
 
 
 		// Client book
-		params = commandeParser.parse(commande, "client|c book|b <code> <start> <end> <room> [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "client|c book|b <code> <start> <end> <room> [money] [account]=" + acc).orElse(null);
 		if(params != null){
-			logger.info("Not implemented Iet");
-			return; 	
+			clientService.book(
+					params.get("account"),
+					params.get("code"),
+					Util.computeData(params.get("start")),
+					Util.computeData(params.get("end")),
+					Integer.parseInt(params.get("room")),
+					Optional.ofNullable(params.get("money")).map(BigInteger::new)
+			);
+			return;
+		}
+
+
+
+		// Client priceBook
+		params = commandeParser.parse(commande, "client|c priceBook|pb <code> <start> <end> <room> [account]=" + acc).orElse(null);
+		if(params != null){
+			clientService.priceBook(
+					params.get("account"),
+					params.get("code"),
+					Util.computeData(params.get("start")),
+					Util.computeData(params.get("end")),
+					Integer.parseInt(params.get("room"))
+			);
+			return;
 		}
 
 
