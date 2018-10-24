@@ -33,7 +33,7 @@ public class ConsoleUtilService{
 			logger.info("All Data: " + tr.toString());
 			logger.info("Transaction ==================== SUCCESS ====================");
 		}else {
-			logger.info("Transaction ==================== FAIL =======================");
+			logger.warn("Transaction ==================== FAIL =======================");
 			logger.warn("Status: " +tr.getStatus());
 			logger.warn("ContractAddress: " +tr.getContractAddress());
 			logger.warn("GasUsed: " +tr.getGasUsed());

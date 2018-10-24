@@ -1,5 +1,6 @@
 package edu.hotel2000.services;
 
+import edu.hotel2000.Util;
 import edu.hotel2000.contract.Hotel2000;
 import edu.hotel2000.models.ConsoleEnv;
 import edu.hotel2000.models.Hotel;
@@ -30,17 +31,25 @@ class ConsoleHotelService{
 	}
 
 	void infoHotel(String accountName, String code) throws Exception{
+		logger.info("See hotel info: " +
+				"accountName=\"" + accountName + "\", " +
+				"hotelCode=\"" + code + "\"");
 		Hotel2000 hotel2000 = getContract(accountName);
 		try{
 			Hotel hotel = new Hotel(hotel2000.getHotel(code).send());
-			logger.info(hotel.toString());
+			logger.info("OK: " + hotel.toString());
 		}catch(Exception e){
-			logger.error("Fail", e);
+			logger.error("KO: getHotel fail", e);
 		}
 	}
 
 
 	void canCreateHotel(String accountName, String code, int nbRoom, BigInteger price) throws Exception{
+		logger.info("Check if canCreateHotel: " +
+				"accountName=\"" + accountName + "\", " +
+				"hotelCode=\"" + code + "\""+
+				"nbRoom=" + nbRoom +
+				"price=" + price);
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, String> res = hotel2000.canCreateHotel(code, BigInteger.valueOf(nbRoom), price).send();
 		if(res.getValue1()){
@@ -52,6 +61,11 @@ class ConsoleHotelService{
 	}
 
 	void createHotel(String accountName, String code, int nbRoom, BigInteger price) throws Exception{
+		logger.info("Try create hotel: " +
+				"accountName=\"" + accountName + "\", " +
+				"hotelCode=\"" + code + "\""+
+				"nbRoom=" + nbRoom +
+				"price=" + price);
 		Hotel2000 hotel2000 = getContract(accountName);
 		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{
@@ -63,13 +77,16 @@ class ConsoleHotelService{
 				logger.error("KO: fail creating hotel " + code);
 			}
 		}catch(Exception e){
-			logger.error("KO: fail creating hotel " + code, e);
+			logger.error("KO: createHotel fail " + code, e);
 		}
 
 
 	}
 
 	void withdraw(String accountName, String code) throws IOException, CipherException{
+		logger.info("Try withdraw: " +
+				"accountName=\"" + accountName + "\", " +
+				"hotelCode=\"" + code + "\"");
 		Hotel2000 hotel2000 = getContract(accountName);
 		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{

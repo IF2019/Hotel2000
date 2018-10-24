@@ -2,6 +2,7 @@ pragma solidity ^0.4.17;
 import {Lib} from "./lib.sol";
 
 contract Hotel2000 {
+	uint256 constant TIME_SCALE = 1000;
 
 	uint32 bookingIdInc = 1;
 	mapping(uint    => Lib.Booking) bookings; // ResevationID => Reservation
@@ -21,7 +22,7 @@ contract Hotel2000 {
 		for (uint32 i = 0; i < _nbRooms; i++) {
 			initRoom(hotel.rooms[i]);
 		}
-        hotel.owner = msg.sender;
+		hotel.owner = msg.sender;
 		hotel.isset = true;
 	}
 
@@ -38,12 +39,12 @@ contract Hotel2000 {
 	function getHotel(string _code) public view returns(string, string, string, uint256, address, uint32) {
 		require(hotels[_code].isset, "hotel not found");
 		return(
-			hotels[_code].code,
-			hotels[_code].title,
-			hotels[_code].description,
-			hotels[_code].price,
-			hotels[_code].owner,
-			hotels[_code].nbRooms
+		hotels[_code].code,
+		hotels[_code].title,
+		hotels[_code].description,
+		hotels[_code].price,
+		hotels[_code].owner,
+		hotels[_code].nbRooms
 		);
 	}
 
@@ -55,109 +56,110 @@ contract Hotel2000 {
 		initHotel(hotels[_code], _code, _nbRooms, _price);
 	}
 
-    // start and end are timestamps
-    function canBook(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) view public returns(bool, string) {
-        uint32 _start = timestampToDaystamp(_start_d);
-        uint32 _end = timestampToDaystamp(_end_d);
+	// start and end are timestamps
+	function canBook(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) view public returns(bool, string) {
+		uint32 _start = timestampToDaystamp(_start_d);
+		uint32 _end = timestampToDaystamp(_end_d);
 
-        bool          bookable;
-        string memory message;
-        (bookable, message) = canBook_internal(_code, _start, _end, _room);
-        if (!bookable) return (bookable, message);
-        if (msg.sender.balance < hotels[_code].price) return (false, "your balance isn't high enough");
-        return (true, "you can book this room");
-    }
+		bool          bookable;
+		string memory message;
+		(bookable, message) = canBook_internal(_code, _start, _end, _room);
+		if (!bookable) return (bookable, message);
+		return (true, "you can book this room");
+	}
 
-    function getBookingPrice(string _code, uint256 _start_d, uint256 _end_d) view public returns(bool, uint256) {
-        uint32 _start = timestampToDaystamp(_start_d);
-        uint32 _end = timestampToDaystamp(_end_d);
-        
-        Lib.Hotel storage hotel = hotels[_code];
-        if (!hotel.isset) return (false, 0);
-        return (true, (_end - _start) * hotels[_code].price);
-    }
+	function getBookingPrice(string _code, uint256 _start_d, uint256 _end_d) view public returns(bool, uint256) {
+		uint32 _start = timestampToDaystamp(_start_d);
+		uint32 _end = timestampToDaystamp(_end_d);
 
-    // start and end are timestamps
-    function canBook_internal(string _code, uint32 _start, uint32 _end, uint32 _room) view internal returns(bool, string) {
-        Lib.Hotel storage hotel = hotels[_code];
-        require(hotel.isset, "hotel not found");
-        Lib.Room storage room = hotels[_code].rooms[_room];
-        require(room.isset, "room not found");
-        if (_start >= _end) return (false, "the booking start must happen before the booking end");
-        for (uint32 i = _start; i <= _end; i++) {
-            // @IMPROVE add the booking days
-            if (bookings[room.bookings[i]].isset) return (false, "the room has already been booked");
-        }
+		Lib.Hotel storage hotel = hotels[_code];
+		if (!hotel.isset) return (false, 0);
+		return (true, (_end - _start) * hotels[_code].price);
+	}
 
-        return (true, "");
-    }
-    
-    // start and end are timestamps
-    function book(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) public payable {
-        uint32 _start = timestampToDaystamp(_start_d);
-        uint32 _end = timestampToDaystamp(_end_d);
+	// start and end are timestamps        if (msg.sender.balance < hotels[_code].price) return (false, "your balance isn't high enough");
 
-        bool          bookable;
-        string memory message;
-        (bookable, message) = canBook_internal(_code, _start, _end, _room);
-        require(bookable, message);
+	function canBook_internal(string _code, uint32 _start, uint32 _end, uint32 _room) view internal returns(bool, string) {
+		Lib.Hotel storage hotel = hotels[_code];
+		require(hotel.isset, "hotel not found");
+		Lib.Room storage room = hotels[_code].rooms[_room];
+		require(room.isset, "room not found");
+		if (_start >= _end) return (false, "the booking start must happen before the booking end");
+		if (_start <= timestampToDaystamp(now)) return (false, "the booking start must happen after today");
+		for (uint32 i = _start; i <= _end; i++) {
+			// @IMPROVE add the booking days
+			if (bookings[room.bookings[i]].isset) return (false, "the room has already been booked");
+		}
 
-        Lib.Hotel   storage hotel = hotels[_code];
-        Lib.Room    storage room  = hotel.rooms[_room];
-        
-        require(msg.value >= hotel.price, "you must send enough money to pay for the booking");
+		return (true, "");
+	}
 
-        uint32 booking_id = bookingIdInc++;
-        Lib.Booking storage booking = bookings[booking_id];
+	// start and end are timestamps
+	function book(string _code, uint256 _start_d, uint256 _end_d, uint32 _room) public payable {
+		uint32 _start = timestampToDaystamp(_start_d);
+		uint32 _end = timestampToDaystamp(_end_d);
 
-        hotel.nbActiveBookings++;
-        hotel.active_bookings[hotel.nbActiveBookings-1] = booking_id;
-        hotel.nbBookings++;
-        hotel.bookings[hotel.nbBookings-1] = booking_id;
+		bool          bookable;
+		string memory message;
+		(bookable, message) = canBook_internal(_code, _start, _end, _room);
+		require(bookable, message);
 
-        booking.isset     = true;
-        booking.client    = msg.sender;
-        booking.hotelCode = hotel.code;
-        booking.price     = hotel.price;
-        booking.createdAt = now;
-        booking.id        = booking_id;
-        booking.start     = _start;
-        booking.end       = _end;
-        booking.room      = _room;
-        
-        for (uint32 i = _start; i < _end; i++) {
-            room.bookings[i] = booking_id;
-        }
-    }
-    
-    function withdraw(string _code) public {
-        Lib.Hotel   storage hotel = hotels[_code];
-        uint256             transfer = 0;
+		Lib.Hotel   storage hotel = hotels[_code];
+		Lib.Room    storage room  = hotel.rooms[_room];
 
-        require(msg.sender == hotel.owner, "you can only withdraw if you are the hotel owner");
+		require(msg.value >= hotel.price, "you must send enough money to pay for the booking");
 
-        for (uint32 i = 0; hotel.active_bookings[i] != 0; ) {
-            Lib.Booking memory booking;
-            booking = bookings[hotel.active_bookings[i]];
-            if (booking.end < timestampToDaystamp(now)) {
-                transfer += booking.price;
-                hotel.active_bookings[i] = hotel.active_bookings[--hotel.nbActiveBookings];
-            } else {
-                i++;
-            }
-        }
+		uint32 booking_id = bookingIdInc++;
+		Lib.Booking storage booking = bookings[booking_id];
 
-        msg.sender.transfer(transfer);
-    }
+		hotel.nbActiveBookings++;
+		hotel.active_bookings[hotel.nbActiveBookings-1] = booking_id;
+		hotel.nbBookings++;
+		hotel.bookings[hotel.nbBookings-1] = booking_id;
 
-    function editDescription(string _code, string _description) public {
-        Lib.Hotel storage hotel = hotels[_code];
-        require(msg.sender == hotel.owner, "not owner");
-        hotel.description = _description;
-    }
+		booking.isset     = true;
+		booking.client    = msg.sender;
+		booking.hotelCode = hotel.code;
+		booking.price     = hotel.price;
+		booking.createdAt = now;
+		booking.id        = booking_id;
+		booking.start     = _start;
+		booking.end       = _end;
+		booking.room      = _room;
+
+		for (uint32 i = _start; i < _end; i++) {
+			room.bookings[i] = booking_id;
+		}
+	}
+
+	function withdraw(string _code) public {
+		Lib.Hotel   storage hotel = hotels[_code];
+		uint256             transfer = 0;
+
+		require(msg.sender == hotel.owner, "you can only withdraw if you are the hotel owner");
+
+		for (uint32 i = 0; hotel.active_bookings[i] != 0; ) {
+			Lib.Booking memory booking;
+			booking = bookings[hotel.active_bookings[i]];
+			if (booking.end < timestampToDaystamp(now)) {
+				transfer += booking.price;
+				hotel.active_bookings[i] = hotel.active_bookings[--hotel.nbActiveBookings];
+			} else {
+				i++;
+			}
+		}
+
+		msg.sender.transfer(transfer);
+	}
+
+	function editDescription(string _code, string _description) public {
+		Lib.Hotel storage hotel = hotels[_code];
+		require(msg.sender == hotel.owner, "not owner");
+		hotel.description = _description;
+	}
 
 	function timestampToDaystamp(uint256 timestamp) pure public returns(uint32) {
-		return uint32(timestamp / 86400);
+		return uint32(timestamp / (86400000 / TIME_SCALE));
 	}
 
 	function test() public pure returns (string) {

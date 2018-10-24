@@ -17,6 +17,7 @@ public class App{
 	private static final String DEPLOY_ACCOUNT = Config.get("hotel2000.deployAccount");
 	private static final String TEST_ACOUNT = Config.get("hotel2000.testAccount");
 	private static final String CONSOLE_ACOUNT = Config.get("hotel2000.consoleAccount");
+	private static final boolean SHOW_DATE = Config.get("hotel2000.showDate", "false").equalsIgnoreCase("true");
 
 	public static void main(String[] args) throws Exception{
 
@@ -44,9 +45,9 @@ public class App{
 		String hotel2000ContractAddress;
 		if(args.length > 0){
 			hotel2000ContractAddress = args[0];
-		} else {
+		}else{
 			logger.info("No address specified for Hotel2000 contract (add address in first parameter)");
-			logger.info("Deployer Contract Hotel2000 from: " + credentialsDeploy.getAddress());
+			logger.info("Account \"" + DEPLOY_ACCOUNT + "\" deploy Contract Hotel2000 ... ");
 			Hotel2000 res = Hotel2000.deploy(web3j, credentialsDeploy, new DefaultGasProvider()).send();
 			logger.info("Contract Hotel2000 deployed! ContractAddress: " + res.getContractAddress());
 			hotel2000ContractAddress = res.getContractAddress();
@@ -61,14 +62,29 @@ public class App{
 				.accountName(CONSOLE_ACOUNT)
 				.build();
 
+		if(SHOW_DATE){
+			logger.info("Current date : " + Util.datestempToString(System.currentTimeMillis()));
+			new Thread(() -> {
+				try{
+					while(true){
+						long whiteTime = Util.TIME_IN_DATESTAMP - (System.currentTimeMillis() % Util.TIME_IN_DATESTAMP);
+						Thread.sleep(whiteTime+1);
+						logger.info("Current date : " + Util.datestempToString(System.currentTimeMillis()));
+					}
+				}catch(InterruptedException e){
+					logger.error("SHOW_DATE: InterruptedException",e);
+				}
+			}).start();
+		}
+
 		ConsoleService consoleService = new ConsoleService(env, accountService);
 
 		InputCommandReader reader = new InputCommandReader(System.in, consoleService);
 
 		reader.start();
 
-	}
 
+	}
 
 
 }

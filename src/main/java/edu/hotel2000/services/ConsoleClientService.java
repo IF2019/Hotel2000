@@ -1,5 +1,6 @@
 package edu.hotel2000.services;
 
+import edu.hotel2000.Util;
 import edu.hotel2000.contract.Hotel2000;
 import edu.hotel2000.models.ConsoleEnv;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.web3j.tx.gas.DefaultGasProvider;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -31,29 +33,48 @@ public class ConsoleClientService{
 
 
 	void canBook(String accountName, String code, BigInteger start, BigInteger end, int room) throws Exception{
+		logger.info("Check if canBook: " +
+				"accountName=\"" + accountName + "\", " +
+				"hotelCode=\"" + code + "\", " +
+				"start=\"" + Util.datestempToString(start) + "\", " +
+				"end=\"" + Util.datestempToString(end) + "\", " +
+				"room=" + room );
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, String> res = hotel2000.canBook(code, start, end, BigInteger.valueOf(room)).send();
 		if(res.getValue1()){
-			logger.info(accountName + " can create " + code + " hotel");
+			logger.info("OK: " + accountName + " can book this room");
 		}else{
-			logger.info(accountName + " can't create " + code + " hotel: " + res.getValue2());
+			logger.info("KO: " +accountName + " can't book this room: " + res.getValue2());
 		}
 
 	}
 
 
 	void priceBook(String accountName, String code, BigInteger start, BigInteger end, int room) throws Exception{
+		logger.info("Try to view priceBook: " +
+				"accountName=\"" + accountName + "\", " +
+				"hotelCode=\"" + code + "\", " +
+				"start=\"" + Util.datestempToString(start) + "\", " +
+				"end=\"" + Util.datestempToString(end) + "\", " +
+				"room=" + room );
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, BigInteger> res = hotel2000.getBookingPrice(code, start, end).send();
 		if(res.getValue1()){
-			logger.info(" price :  " + res.getValue2());
+			logger.info("OK: price :  " + res.getValue2());
 		}else{
-			logger.error("price not available  ");
+			logger.error("KO: fail to compute price!");
 		}
 
 	}
 
 	void book(String accountName, String code, BigInteger start, BigInteger end, int room, Optional<BigInteger> weiO) throws Exception{
+		logger.info("Try to book: " +
+				"accountName=\"" + accountName + "\", " +
+				"hotelCode=\"" + code + "\", " +
+				"start=\"" + Util.datestempToString(start) + "\", " +
+				"end=\"" + Util.datestempToString(end) + "\", " +
+				"room=" + room + ", " +
+				"wei=" + weiO.map(Objects::toString).orElse("auto") );
 		Hotel2000 hotel2000 = getContract(accountName);
 		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{
@@ -61,17 +82,25 @@ public class ConsoleClientService{
 			if(weiO.isPresent()){
 				wei = weiO.get();
 			} else {
-				wei = hotel2000.getBookingPrice(code, start, end).send().getValue2();
+				logger.info("Compute price ...");
+				Tuple2<Boolean, BigInteger> res = hotel2000.getBookingPrice(code, start, end).send();
+				if(!res.getValue1()){
+					logger.error("KO: Compute price failed");
+					return;
+				}
+				wei = res.getValue2();
+				logger.info("price:" + wei);
 			}
+			logger.info("Compute booking ...");
 			TransactionReceipt res = hotel2000.book(code, start, end, BigInteger.valueOf(room), wei).send();
 			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
 			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
-				logger.error("Hotel " + code +" created");
+				logger.info("OK: Booking success");
 			}else {
-				logger.error("fail create hotel " + code);
+				logger.error("KO: Booking fail (use canBook for view error)");
 			}
 		}catch(Exception e){
-			logger.error("fail create hotel " + code, e);
+			logger.error("KO: Booking fail!", e);
 		}
 
 

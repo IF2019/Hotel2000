@@ -175,6 +175,13 @@ public class ConsoleService implements CommandExec{
 			return;
 		}
 
+		// Date
+		params = commandeParser.parse(commande, "date|d").orElse(null);
+		if(params != null){
+			logger.info("Current date : " + Util.datestempToString(System.currentTimeMillis()));
+			return;
+		}
+
 		System.out.println("Command '" + commande[0] + "' unknown");
 		System.out.println(help);
 	}
