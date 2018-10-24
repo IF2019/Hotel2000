@@ -1,25 +1,26 @@
 package edu.hotel2000;
 
+import org.web3j.utils.Async;
+import rx.Observable;
+import rx.functions.Action0;
+import rx.functions.Action1;
+
 import java.math.BigInteger;
 import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
-
-import org.web3j.utils.Async;
-import rx.Observable;
-import rx.functions.Action1;
-
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Util{
 
-	private static Pattern dateOffset= Pattern.compile("^(\\+?)([0-9]+)(d?)$");
+	private static Pattern dateOffset = Pattern.compile("^(\\+?)([0-9]+)(d?)$");
 
-	public static int TIME_SCALE=1000;
+	public static int TIME_SCALE = 1000;
 
 	public static int TIME_IN_DATESTAMP = 86400000 / TIME_SCALE;
 
@@ -35,8 +36,8 @@ public class Util{
 			}
 			return BigInteger.valueOf(time);
 		}
-		SimpleDateFormat parser=new SimpleDateFormat("dd-MM-yyyy");
-		return BigInteger.valueOf(parser.parse(date).getTime()/TIME_SCALE);
+		SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
+		return BigInteger.valueOf(parser.parse(date).getTime() / TIME_SCALE);
 	}
 
 	public static String datestempToString(BigInteger dateStamp){
@@ -45,43 +46,56 @@ public class Util{
 
 	public static String datestempToString(long dateStamp){
 		Format format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		return format.format(new Date(dateStamp*TIME_SCALE));
+		return format.format(new Date(dateStamp * TIME_SCALE));
 	}
 
-	public static Observable fork(Collection<Observable> observables){
+	public static <T> Observable<List<T>> fork(List<Observable<T>> observables){
 		return Observable.create(subscriber -> {
-			AtomicReference<Integer> count = new AtomicReference<>(observables.size());
-			AtomicReference<Boolean> fail = new AtomicReference<>(false);
-			AtomicReference<Throwable> throwable_ = new AtomicReference<>(null);
-			if(count.get() == 0){
-				subscriber.onNext(null);
+			List<T> res = new ArrayList<>();
+			if(observables.isEmpty()){
+				subscriber.onNext(res);
 				subscriber.onCompleted();
 			}
-			Action1 countDown = o -> {
-				synchronized(count){
-					count.set(count.get() - 1);
+			List<Throwable> errors = new ArrayList<>();
+			AtomicReference<Integer> nbObservable = new AtomicReference<>(observables.size());
+			Action0 countDown = () -> {
+				synchronized(nbObservable){
+					nbObservable.set(nbObservable.get() - 1);
+					if(nbObservable.get() > 0) return;
+					if(nbObservable.get() < 0) throw new RuntimeException("BIG FAILURE: nbObservable="+nbObservable.get());
 				}
-				if(count.get() == 0 && !fail.get()){
-					if(fail.get()){
-						subscriber.onError(throwable_.get());
-					}else {
-						subscriber.onNext(null);
+				if(nbObservable.get() == 0){
+					if(errors.isEmpty()){
+						subscriber.onNext(res);
 						subscriber.onCompleted();
+					}else if(errors.size() == 1){
+						subscriber.onError(errors.get(0));
+					}else{
+						Exception e = new Exception("Multiple errors: " + errors){
+							List<Throwable> errors_ = errors;
+						};
+						subscriber.onError(e);
 					}
 
 				}
 			};
 
-			Action1<Throwable> failure = throwable -> {
-				fail.set(true);
-				throwable_.set(throwable);
-				countDown.call(null);
-			};
 
 			observables.forEach(observable -> {
 				Async.run(() -> observable.subscribe(
-						countDown,
-						failure));
+						(obj) -> {
+							synchronized(res){
+								res.add(obj);
+							}
+						},
+						(failure)->{
+							synchronized(errors){
+								errors.add(failure);
+							}
+							countDown.call();
+						},
+						countDown
+						));
 			});
 		});
 	}

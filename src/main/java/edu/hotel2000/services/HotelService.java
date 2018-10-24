@@ -4,79 +4,81 @@ import edu.hotel2000.Util;
 import edu.hotel2000.contract.Hotel2000;
 import edu.hotel2000.models.Booking;
 import edu.hotel2000.models.Hotel;
-import edu.hotel2000.models.Room;
 import org.apache.log4j.Logger;
-import org.web3j.protocol.Web3j;
 import rx.Observable;
-import sun.security.krb5.Credentials;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class HotelService{
 	private static final Logger logger = Logger.getLogger(HotelService.class);
 
-	public Hotel getHotel(Web3j web3j, Hotel2000 contract, String code) throws Exception{
-		Hotel hotel = new Hotel(contract.getHotel(code).send());
-		Room[] rooms = hotel.getRooms();
+	private void applieBookingInRooms(Hotel hotel, Collection<Booking> bookings){
+		bookings.forEach(booking -> {
+			Map<Long, Integer> roomBookins = hotel.getRooms()[booking.getRoomId()].getBooking();
+			for(long i = booking.getStart(); i < booking.getEnd(); i++){
+				roomBookins.put(i, booking.getId());
+			}
+		});
+	}
+
+	public Observable<Booking> getBooking(Hotel2000 contract, int id){
+		return contract.getBooking(BigInteger.valueOf(id)).observable().map(Booking::new);
+	}
+
+	public Map<Integer, Booking> indexBooking(List<Booking> bookings){
+		return bookings.stream().collect(Collectors.toMap(Booking::getId, booking -> booking));
+	}
+
+	public Observable<List<Booking>> getBooking(Hotel2000 contract, int[] ids){
+
+		return Util.fork(Arrays.stream(ids)
+				.mapToObj(id -> getBooking(contract, id))
+				.collect(Collectors.toCollection(ArrayList::new)));
+	}
+
+	public Observable<Hotel> insertHotelBookingsId(Hotel2000 contract, Hotel hotel){
+
+		List<Observable<Integer>> observables = new ArrayList<>();
 		int[] bookingsId = hotel.getBookingsId();
-		int[] activeBookingsId = hotel.getActiveBookingsId();
-
-		final Throwable[] e = {null};
-		List<Observable> observables = new ArrayList<>();
-
-		Map<Integer, Booking> bookingMap = new HashMap<>();
-
-		for(int i = 0; i < rooms.length; i++){
-			rooms[i] = new Room();
-		}
-
 		for(int i = 0; i < bookingsId.length; i++){
 			logger.debug("Search id for bookingsId[" + i + "]");
 			int index = i;
 			observables.add(
-					contract.getHotelBookingId(code, BigInteger.valueOf(i)).observable()
+					contract.getHotelBookingId(hotel.getCode(), BigInteger.valueOf(i)).observable()
 							.map(BigInteger::intValue)
-							.flatMap(id -> {
-								bookingsId[index] = id;
-								logger.debug("bookingsId[" + index + "]=" + id);
-								logger.debug("Search booking for id[" + index + "]=" + id);
-								return contract.getBooking(BigInteger.valueOf(id)).observable();
-							})
-							.map(Booking::new)
-							.doOnNext(booking -> {
-								logger.debug("booking found: " + booking);
-								bookingMap.put(booking.getId(), booking);
-								for(long day = booking.getStart(); day < booking.getEnd(); day++){
-									rooms[booking.getRoomId()].getBooking().put(day, booking.getId());
-								}
-							})
-							.doOnError(throwable -> logger.error("bookingsId " + index + " failed", e[0] = throwable))
+							.doOnNext(id -> bookingsId[index] = id)
 			);
 		}
+		return Util.fork(observables).map(o -> hotel);
+	}
+
+	public Observable<Hotel> insertHotelActiveBookingsId(Hotel2000 contract, Hotel hotel){
+
+		List<Observable<Integer>> observables = new ArrayList<>();
+		int[] activeBookingsId = hotel.getActiveBookingsId();
 
 		for(int i = 0; i < activeBookingsId.length; i++){
 			logger.debug("Search id for activeBookingsId[" + i + "]");
 			int index = i;
 			observables.add(
-					contract.getHotelBookingId(code, BigInteger.valueOf(i)).observable()
+					contract.getHotelBookingId(hotel.getCode(), BigInteger.valueOf(i)).observable()
 							.map(BigInteger::intValue)
-							.doOnNext(id -> {
-								activeBookingsId[index] = id;
-							})
-							.doOnError(throwable -> logger.error("bookingsId " + index + " failed", e[0] = throwable))
+							.doOnNext(id -> activeBookingsId[index] = id)
 			);
 		}
+		return Util.fork(observables).map(o -> hotel);
+	}
 
-
-		logger.debug("Fork and subscribe all Observable");
-		Util.fork(observables).toBlocking().subscribe(); // Wait all response
-		logger.debug("Wait all response Finish");
-
-
-		return hotel;
+	public Observable<Hotel> getHotel(Hotel2000 contract, String code){
+		return contract.getHotel(code).observable()
+				.map(Hotel::new)
+				.flatMap(hotel -> insertHotelActiveBookingsId(contract, hotel))
+				.flatMap(hotel -> insertHotelBookingsId(contract, hotel))
+				.flatMap(hotel -> getBooking(contract, hotel.getBookingsId())
+						.doOnNext(bookings -> applieBookingInRooms(hotel, bookings))
+						.map(bookingMap -> hotel)
+				);
 	}
 }
