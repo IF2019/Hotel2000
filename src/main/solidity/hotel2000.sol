@@ -159,7 +159,6 @@ contract Hotel2000 {
 		Lib.Hotel   storage hotel = hotels[_code];
 		Lib.Room    storage room  = hotel.rooms[_room];
 
-		require(msg.value >= hotel.price, "you must send enough money to pay for the booking");
 
 		uint32 booking_id = bookingIdInc++;
 		Lib.Booking storage booking = bookings[booking_id];
@@ -172,12 +171,14 @@ contract Hotel2000 {
 		booking.isset     = true;
 		booking.client    = msg.sender;
 		booking.hotelCode = hotel.code;
-		booking.price     = hotel.price;
+		booking.price     = hotel.price * (_end - _start);
 		booking.createdAt = now;
 		booking.id        = booking_id;
 		booking.start     = _start;
 		booking.end       = _end;
 		booking.room      = _room;
+
+		require(msg.value >= booking.price, "you must send enough money to pay for the booking");
 
 		for (uint32 i = _start; i < _end; i++) {
 			room.bookings[i] = booking_id;
