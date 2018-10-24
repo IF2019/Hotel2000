@@ -33,30 +33,30 @@ public class ConsoleClientService{
 
 
 	void canBook(String accountName, String code, BigInteger start, BigInteger end, int room) throws Exception{
-		logger.info("Check if canBook: " +
-				"accountName=\"" + accountName + "\", " +
-				"hotelCode=\"" + code + "\", " +
-				"start=\"" + Util.datestempToString(start) + "\", " +
-				"end=\"" + Util.datestempToString(end) + "\", " +
-				"room=" + room );
+		logger.info("Check if canBook:" +
+				" accountName=\"" + accountName + "\"," +
+				" hotelCode=\"" + code + "\"," +
+				" start=\"" + Util.datestempToString(start) + "\"," +
+				" end=\"" + Util.datestempToString(end) + "\"," +
+				" roomId=" + room );
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, String> res = hotel2000.canBook(code, start, end, BigInteger.valueOf(room)).send();
 		if(res.getValue1()){
-			logger.info("OK: " + accountName + " can book this room");
+			logger.info("OK: " + accountName + " can book this roomId");
 		}else{
-			logger.info("KO: " +accountName + " can't book this room: " + res.getValue2());
+			logger.info("KO: " +accountName + " can't book this roomId: " + res.getValue2());
 		}
 
 	}
 
 
 	void priceBook(String accountName, String code, BigInteger start, BigInteger end, int room) throws Exception{
-		logger.info("Try to view priceBook: " +
-				"accountName=\"" + accountName + "\", " +
-				"hotelCode=\"" + code + "\", " +
-				"start=\"" + Util.datestempToString(start) + "\", " +
-				"end=\"" + Util.datestempToString(end) + "\", " +
-				"room=" + room );
+		logger.info("Try to view priceBook:" +
+				" accountName=\"" + accountName + "\"," +
+				" hotelCode=\"" + code + "\"," +
+				" start=\"" + Util.datestempToString(start) + "\"," +
+				" end=\"" + Util.datestempToString(end) + "\"," +
+				" roomId=" + room );
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, BigInteger> res = hotel2000.getBookingPrice(code, start, end).send();
 		if(res.getValue1()){
@@ -68,13 +68,13 @@ public class ConsoleClientService{
 	}
 
 	void book(String accountName, String code, BigInteger start, BigInteger end, int room, Optional<BigInteger> weiO) throws Exception{
-		logger.info("Try to book: " +
-				"accountName=\"" + accountName + "\", " +
-				"hotelCode=\"" + code + "\", " +
-				"start=\"" + Util.datestempToString(start) + "\", " +
-				"end=\"" + Util.datestempToString(end) + "\", " +
-				"room=" + room + ", " +
-				"wei=" + weiO.map(Objects::toString).orElse("auto") );
+		logger.info("Try to book:" +
+				" accountName=\"" + accountName + "\"," +
+				" hotelCode=\"" + code + "\"," +
+				" start=\"" + Util.datestempToString(start) + "\"," +
+				" end=\"" + Util.datestempToString(end) + "\"," +
+				" roomId=" + room + "," +
+				" wei=" + weiO.map(Objects::toString).orElse("auto") );
 		Hotel2000 hotel2000 = getContract(accountName);
 		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{

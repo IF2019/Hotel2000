@@ -21,8 +21,8 @@ library Lib {
 	struct Hotel {
 		address owner;
 		Room[] rooms;
-        uint32[] active_bookings;
-        uint32[] bookings;
+		uint32[] active_bookings;
+		uint32[] bookings;
 		string  code;
 		string  title;
 		string  description;

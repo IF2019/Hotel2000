@@ -22,7 +22,7 @@ public class ConsoleService implements CommandExec{
 	public ConsoleService(ConsoleEnv env, AccountService accountService){
 		this.env = env;
 		this.utilService = new ConsoleUtilService(env, accountService);
-		this.hotelService = new ConsoleHotelService(env, accountService, utilService);
+		this.hotelService = new ConsoleHotelService(env, accountService, utilService, new HotelService());
 		this.commandeParser = new CommandeParser();
 		this.clientService = new ConsoleClientService(env, accountService, utilService);
 	}
@@ -106,28 +106,28 @@ public class ConsoleService implements CommandExec{
 
 
 		// Client canBook
-		params = commandeParser.parse(commande, "client|c canBook|cb <code> <start> <end> <room> [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "clientAddress|c canBook|cb <code> <start> <end> <roomId> [account]=" + acc).orElse(null);
 		if(params != null){
 			clientService.canBook(
 					params.get("account"),
 					params.get("code"),
 					Util.computeData(params.get("start")),
 					Util.computeData(params.get("end")),
-					Integer.parseInt(params.get("room"))
+					Integer.parseInt(params.get("roomId"))
 			);
 			return;
 		}
 
 
 		// Client book
-		params = commandeParser.parse(commande, "client|c book|b <code> <start> <end> <room> [money] [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "clientAddress|c book|b <code> <start> <end> <roomId> [money] [account]=" + acc).orElse(null);
 		if(params != null){
 			clientService.book(
 					params.get("account"),
 					params.get("code"),
 					Util.computeData(params.get("start")),
 					Util.computeData(params.get("end")),
-					Integer.parseInt(params.get("room")),
+					Integer.parseInt(params.get("roomId")),
 					Optional.ofNullable(params.get("money")).map(BigInteger::new)
 			);
 			return;
@@ -136,14 +136,14 @@ public class ConsoleService implements CommandExec{
 
 
 		// Client priceBook
-		params = commandeParser.parse(commande, "client|c priceBook|pb <code> <start> <end> <room> [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "clientAddress|c priceBook|pb <code> <start> <end> <roomId> [account]=" + acc).orElse(null);
 		if(params != null){
 			clientService.priceBook(
 					params.get("account"),
 					params.get("code"),
 					Util.computeData(params.get("start")),
 					Util.computeData(params.get("end")),
-					Integer.parseInt(params.get("room"))
+					Integer.parseInt(params.get("roomId"))
 			);
 			return;
 		}

@@ -1,10 +1,9 @@
 package edu.hotel2000.models;
 
 import lombok.*;
-import org.web3j.tuples.generated.Tuple6;
+import org.web3j.tuples.generated.Tuple9;
 
 import java.math.BigInteger;
-import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,20 +13,24 @@ import java.util.Map;
 public class Hotel{
 
 	private String owner;
-	private Map<BigInteger, Room> rooms;
+	private Room[] rooms;
+	private int[] activeBookingsId;
+	private int[] bookingsId;
 	private String code;
 	private String title;
 	private String description;
 	private BigInteger price;      // Price per night
 	private BigInteger createdAt;  // Timestamp
-	private BigInteger nbRooms;
 
-	public Hotel(Tuple6<String, String, String, BigInteger, String, BigInteger> data){
-		code = data.getValue1();
-		title = data.getValue2();
-		description = data.getValue3();
-		price = data.getValue4();
-		owner = data.getValue5();
-		nbRooms = data.getValue6();
+	public Hotel(Tuple9<String, BigInteger, BigInteger, BigInteger, String, String, String, BigInteger, BigInteger> data){
+		owner = data.getValue1();
+		rooms = new Room[data.getValue2().intValue()];
+		activeBookingsId = new int[data.getValue3().intValue()];
+		bookingsId = new int[data.getValue4().intValue()];
+		code = data.getValue5();
+		title = data.getValue6();
+		description = data.getValue7();
+		price = data.getValue8();
+		createdAt = data.getValue9();
 	}
 }

@@ -3,13 +3,13 @@ package edu.hotel2000.models;
 import lombok.*;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @ToString
 public class Room{
-	private Map<BigInteger, BigInteger> bookings; // Daystamp => BookingID
+	private Map<Long, Integer> booking = new HashMap<>(); // Daystamp => BookingID
 }

@@ -5,7 +5,7 @@ contract Hotel2000 {
 	uint256 constant TIME_SCALE = 1000;
 
 	uint32 bookingIdInc = 1;
-	mapping(uint    => Lib.Booking) bookings; // ResevationID => Reservation
+	mapping(uint32    => Lib.Booking) bookings; // ResevationID => Reservation
 	mapping(string  => Lib.Hotel) hotels; // HotelCode  => Hotel
 
 	constructor() public {}
@@ -18,7 +18,7 @@ contract Hotel2000 {
 		hotel.code      = _code;
 		hotel.createdAt = now;
 		hotel.price     = _price;
-        hotel.rooms.length = _nbRooms;
+		hotel.rooms.length = _nbRooms;
 		for (uint32 i = 0; i < _nbRooms; i++) {
 			initRoom(hotel.rooms[i]);
 		}
@@ -36,16 +36,77 @@ contract Hotel2000 {
 		return (true, "");
 	}
 
-	function getHotel(string _code) public view returns(string, string, string, uint256, address, uint32) {
-		require(hotels[_code].isset, "hotel not found");
+	function getHotel(string _code) public view returns(address, uint32, uint32, uint32, string, string, string, uint256, uint256) {
+		Lib.Hotel storage hotel = hotels[_code];
+		require(hotel.isset, "hotel not found");
 		return(
-			hotels[_code].code,
-			hotels[_code].title,
-			hotels[_code].description,
-			hotels[_code].price,
-			hotels[_code].owner,
-			uint32(hotels[_code].rooms.length)
+		hotel.owner,
+		uint32(hotel.rooms.length),
+		uint32(hotel.bookings.length),
+		uint32(hotel.active_bookings.length),
+		hotel.code,
+		hotel.title,
+		hotel.description,
+		hotel.price,
+		hotel.createdAt
 		);
+	}
+
+//	function getHotelRoom(string _code, uint32 index) public view returns(DATA){
+//		Lib.Hotel storage hotel = hotels[_code];
+//		require(hotel.isset, "hotel not found");
+//		require(hotel.rooms.length > index, "roomId not found");
+//		Lib.Room storage roomId = hotel.rooms[index];
+//		return (
+//			DATA
+//		);
+//	}
+
+	function getHotelRoomBookingId(string _code, uint32 index, uint256 timestamps) public view returns (uint32){
+		Lib.Hotel storage hotel = hotels[_code];
+		require(hotel.isset, "hotel not found");
+		require(hotel.rooms.length > index, "room not found");
+		Lib.Room storage room = hotel.rooms[index];
+		return room.bookings[timestampToDaystamp(timestamps)];
+	}
+
+
+	function getHotelBookingId(string _code, uint32 index) public view returns(uint32){
+		Lib.Hotel storage hotel = hotels[_code];
+		require(hotel.isset, "hotel not found");
+		require(hotel.bookings.length > index, "room not found");
+		return(hotel.bookings[index]);
+	}
+
+	function getHotelActiveBookingId(string _code, uint32 index) public view returns(uint32){
+		Lib.Hotel storage hotel = hotels[_code];
+		require(hotel.isset, "hotel not found");
+		require(hotel.active_bookings.length > index, "room not found");
+		return(hotel.active_bookings[index]);
+	}
+
+	function getBooking(uint32 id) public view returns(address, string, uint256, uint256, uint32, uint32, uint32, uint32){
+		Lib.Booking storage booking = bookings[id];
+		require(booking.isset, "booking not found");
+		return(
+		booking.client,
+		booking.hotelCode,
+		booking.price,
+		booking.createdAt,  // Timestamp
+		booking.id,
+		booking.start,      // Daystamp
+		booking.end,        // Daystamp
+		booking.room       // Index
+		);
+	}
+
+	function getBookingPrice(string _code, uint256 _start_d, uint256 _end_d) view public returns(bool, uint256) {
+		uint32 _start = timestampToDaystamp(_start_d);
+		uint32 _end = timestampToDaystamp(_end_d);
+
+		Lib.Hotel storage hotel = hotels[_code];
+		if (!hotel.isset) return (false, 0);
+		return (true, (_end - _start) * hotels[_code].price);
 	}
 
 	function createHotel(string _code, uint32 _nbRooms, uint256 _price) public {
@@ -66,15 +127,6 @@ contract Hotel2000 {
 		(bookable, message) = canBook_internal(_code, _start, _end, _room);
 		if (!bookable) return (bookable, message);
 		return (true, "you can book this room");
-	}
-
-	function getBookingPrice(string _code, uint256 _start_d, uint256 _end_d) view public returns(bool, uint256) {
-		uint32 _start = timestampToDaystamp(_start_d);
-		uint32 _end = timestampToDaystamp(_end_d);
-
-		Lib.Hotel storage hotel = hotels[_code];
-		if (!hotel.isset) return (false, 0);
-		return (true, (_end - _start) * hotels[_code].price);
 	}
 
 	// start and end are timestamps        if (msg.sender.balance < hotels[_code].price) return (false, "your balance isn't high enough");
