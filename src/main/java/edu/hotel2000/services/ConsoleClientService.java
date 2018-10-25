@@ -3,6 +3,7 @@ package edu.hotel2000.services;
 import edu.hotel2000.Util;
 import edu.hotel2000.contract.Hotel2000;
 import edu.hotel2000.models.ConsoleEnv;
+import edu.hotel2000.models.Money;
 import lombok.AllArgsConstructor;
 import org.apache.log4j.Logger;
 import org.web3j.crypto.CipherException;
@@ -66,7 +67,7 @@ public class ConsoleClientService{
 
 	}
 
-	void book(String accountName, String code, BigInteger start, BigInteger end, int room, Optional<BigInteger> weiO) throws Exception{
+	void book(String accountName, String code, BigInteger start, BigInteger end, int room, Optional<Money> weiO) throws Exception{
 		logger.info("Try to book:" +
 				" accountName=\"" + accountName + "\"," +
 				" hotelCode=\"" + code + "\"," +

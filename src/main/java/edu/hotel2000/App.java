@@ -60,6 +60,7 @@ public class App{
 				.web3j(web3j)
 				.contractAddress(hotel2000ContractAddress)
 				.accountName(CONSOLE_ACOUNT)
+				.gasProvider(new DefaultGasProvider())
 				.build();
 
 		if(SHOW_DATE){

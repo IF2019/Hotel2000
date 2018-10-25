@@ -3,6 +3,7 @@ package edu.hotel2000.services;
 import edu.hotel2000.Config;
 import edu.hotel2000.Util;
 import edu.hotel2000.models.ConsoleEnv;
+import edu.hotel2000.models.Money;
 import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
@@ -143,8 +144,8 @@ public class ConsoleService implements CommandExec{
 			clientService.canBook(
 					params.get("account"),
 					params.get("code"),
-					Util.computeData(params.get("start")),
-					Util.computeData(params.get("end")),
+					Util.parseData(params.get("start")),
+					Util.parseData(params.get("end")),
 					Integer.parseInt(params.get("roomId"))
 			);
 			return;
@@ -157,10 +158,10 @@ public class ConsoleService implements CommandExec{
 			clientService.book(
 					params.get("account"),
 					params.get("code"),
-					Util.computeData(params.get("start")),
-					Util.computeData(params.get("end")),
+					Util.parseData(params.get("start")),
+					Util.parseData(params.get("end")),
 					Integer.parseInt(params.get("roomId")),
-					Optional.ofNullable(params.get("money")).map(BigInteger::new)
+					Optional.ofNullable(params.get("money")).map(Money::new)
 			);
 			return;
 		}
@@ -173,8 +174,8 @@ public class ConsoleService implements CommandExec{
 			clientService.priceBook(
 					params.get("account"),
 					params.get("code"),
-					Util.computeData(params.get("start")),
-					Util.computeData(params.get("end")),
+					Util.parseData(params.get("start")),
+					Util.parseData(params.get("end")),
 					Integer.parseInt(params.get("roomId"))
 			);
 			return;
@@ -211,6 +212,17 @@ public class ConsoleService implements CommandExec{
 		params = commandeParser.parse(commande, "date|d").orElse(null);
 		if(params != null){
 			logger.info("Current date : " + Util.timestempToString(System.currentTimeMillis()));
+			return;
+		}
+
+		// Pay
+		params = commandeParser.parse(commande, "[from]=" + acc + " pay|p <to> <qte>").orElse(null);
+		if(params != null){
+			utilService.pay(
+					params.get("from"),
+					params.get("to"),
+					Util.parseMoney(params.get("qte"))
+			);
 			return;
 		}
 

@@ -20,7 +20,7 @@ public class Hotel{
 	private String code;
 	private String title;
 	private String description;
-	private BigInteger price;      // Price per night
+	private Money price;      // Price per night
 	private BigInteger createdAt;  // Timestamp
 
 	public Hotel(Tuple9<String, BigInteger, BigInteger, BigInteger, String, String, String, BigInteger, BigInteger> data){
@@ -33,7 +33,7 @@ public class Hotel{
 		code = data.getValue5();
 		title = data.getValue6();
 		description = data.getValue7();
-		price = data.getValue8();
+		price = Money.of(data.getValue8());
 		createdAt = data.getValue9();
 	}
 }

@@ -1,9 +1,13 @@
 package edu.hotel2000;
 
+import edu.hotel2000.models.Money;
+import javafx.scene.chart.ValueAxis;
 import org.web3j.utils.Async;
+import org.web3j.utils.Convert;
 import rx.Observable;
 import rx.functions.Action0;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.Format;
 import java.text.ParseException;
@@ -24,7 +28,7 @@ public class Util{
 
 	public static int TIME_IN_DATESTAMP = 86400000 / TIME_SCALE;
 
-	public static BigInteger computeData(String date) throws ParseException{
+	public static BigInteger parseData(String date) throws ParseException{
 		Matcher matcher = dateOffset.matcher(date);
 		if(matcher.matches()){
 			long time = Integer.parseInt(matcher.group(2));
@@ -109,5 +113,14 @@ public class Util{
 						));
 			});
 		});
+	}
+
+	public static Money parseMoney(String value){
+		Pattern pattern = Pattern.compile("^(\\-?[0-9]+(\\.[0-9]*)?)([a-zA-Z]*)$");
+		Matcher matcher = pattern.matcher(value);
+		if(!matcher.matches()) throw new RuntimeException("Value is not ETHER : "+ value);
+		Convert.Unit unit = Convert.Unit.valueOf(matcher.group(3).toUpperCase());
+		BigDecimal val = Convert.toWei(matcher.group(1), unit);
+		return Money.of(val.toBigInteger());
 	}
 }

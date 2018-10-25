@@ -12,7 +12,7 @@ import java.math.BigInteger;
 public class Booking{
 	String clientAddress;
 	String hotelCode;
-	BigInteger price;
+	Money price;
 	BigInteger createdAt;  // Timestamp
 	int id;
 	DateStamp start;
@@ -22,7 +22,7 @@ public class Booking{
 	public Booking(Tuple8<String, String, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger> data){
 		clientAddress = data.getValue1();
 		hotelCode = data.getValue2();
-		price = data.getValue3();
+		price = Money.of(data.getValue3());
 		createdAt = data.getValue4();
 		id = data.getValue5().intValue();
 		start = DateStamp.of(data.getValue6());

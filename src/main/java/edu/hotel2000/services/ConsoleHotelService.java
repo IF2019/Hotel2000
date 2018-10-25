@@ -1,7 +1,6 @@
 package edu.hotel2000.services;
 
 import edu.hotel2000.contract.Hotel2000;
-import edu.hotel2000.models.Booking;
 import edu.hotel2000.models.ConsoleEnv;
 import lombok.AllArgsConstructor;
 import org.apache.log4j.Logger;
@@ -9,11 +8,9 @@ import org.web3j.crypto.CipherException;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.gas.DefaultGasProvider;
-import rx.Observable;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
