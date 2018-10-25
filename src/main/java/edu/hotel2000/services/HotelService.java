@@ -71,14 +71,23 @@ public class HotelService{
 		return Util.fork(observables).map(o -> hotel);
 	}
 
-	public Observable<Hotel> getHotel(Hotel2000 contract, String code){
-		return contract.getHotel(code).observable()
-				.map(Hotel::new)
-				.flatMap(hotel -> insertHotelActiveBookingsId(contract, hotel))
-				.flatMap(hotel -> insertHotelBookingsId(contract, hotel))
-				.flatMap(hotel -> getBooking(contract, hotel.getBookingsId())
+	public Observable<Hotel> getHotel(Hotel2000 contract, String code, boolean withActiveBookingsId, boolean withBookingsId, boolean withRoomBookings){
+		Observable<Hotel> res = contract.getHotel(code).observable()
+				.map(Hotel::new);
+		if(withActiveBookingsId)res =res.flatMap(hotel -> insertHotelActiveBookingsId(contract, hotel));
+		if(withBookingsId){
+			res=res.flatMap(hotel -> insertHotelBookingsId(contract, hotel));
+			if(withRoomBookings){
+				res = res.flatMap(hotel -> getBooking(contract, hotel.getBookingsId())
 						.doOnNext(bookings -> applieBookingInRooms(hotel, bookings))
 						.map(bookingMap -> hotel)
 				);
+			}
+		}
+		return res;
+	}
+
+	public Observable<Hotel> getHotel(Hotel2000 contract, String code){
+		return getHotel(contract, code, true, true, true);
 	}
 }

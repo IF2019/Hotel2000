@@ -13,7 +13,7 @@ public class CommandeParser{
 	private enum CommandElementType{
 		TEXT("^(([a-zA-Z0-9\\?\\|]*))$"),
 		REQUIRED_VALUE("^\\<(([a-zA-Z0-9]*))\\>$"),
-		DEFAULT_VALUE("^\\[([a-zA-Z0-9]*)\\]=([a-zA-Z0-9]*)$"),
+		DEFAULT_VALUE("^\\[([a-zA-Z0-9]*)\\]=([a-zA-Z0-9\\-]*)$"),
 		OPTIONAL_VALUE("^\\[(([a-zA-Z0-9]*))\\]$");
 
 		private final Pattern pattern;

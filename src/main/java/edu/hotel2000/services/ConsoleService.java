@@ -27,6 +27,13 @@ public class ConsoleService implements CommandExec{
 		this.clientService = new ConsoleClientService(env, accountService, utilService);
 	}
 
+	private <T> Optional<T> optionalExclude(T value, T ...excludes){
+		if(value == null) return Optional.empty();
+		for(T exclude: excludes){
+			if(value.equals(exclude)) return Optional.empty();
+		}
+		return Optional.of(value);
+	}
 
 	@Override
 	public void evalCommand(String[] commande) throws Exception{
@@ -95,6 +102,31 @@ public class ConsoleService implements CommandExec{
 			return;
 		}
 
+		// Hotel bookings
+		params = commandeParser.parse(commande, "hotel|h bookings|b <code> [room]=-1 [client]=null [account]=" + acc).orElse(null);
+		if(params != null){
+			hotelService.infoBookings(
+					params.get("account"),
+					params.get("code"),
+					optionalExclude(params.get("room"), "-1").map(Integer::parseInt),
+					optionalExclude(params.get("client"), "null")
+			);
+			return;
+		}
+
+		// Hotel activeBookings
+		params = commandeParser.parse(commande, "hotel|h activeBookings|ab <code> [room]=-1 [client]=null [account]=" + acc).orElse(null);
+		if(params != null){
+			hotelService.infoBookings(
+					params.get("account"),
+					params.get("code"),
+					optionalExclude(params.get("room"), "-1").map(Integer::parseInt),
+					optionalExclude(params.get("client"), "null")
+			);
+			return;
+		}
+
+		// Hotel withdraw
 		params = commandeParser.parse(commande, "hotel|h withdraw|w <code> [account]="+acc).orElse(null);
 		if(params != null){
 			hotelService.withdraw(

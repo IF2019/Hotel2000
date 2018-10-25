@@ -1,6 +1,7 @@
 package edu.hotel2000.services;
 
 import edu.hotel2000.contract.Hotel2000;
+import edu.hotel2000.models.Booking;
 import edu.hotel2000.models.ConsoleEnv;
 import lombok.AllArgsConstructor;
 import org.apache.log4j.Logger;
@@ -8,9 +9,12 @@ import org.web3j.crypto.CipherException;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.gas.DefaultGasProvider;
+import rx.Observable;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 class ConsoleHotelService{
@@ -38,6 +42,55 @@ class ConsoleHotelService{
 					hotel -> logger.info("OK: " + hotel.toString()),
 					throwable -> logger.error("KO: getHotel fail", throwable)
 			);
+		}catch(Exception e){
+			logger.error("KO: getHotel fail", e);
+		}
+	}
+
+	void infoBookings(String accountName, String code, Optional<Integer> filterRoom, Optional<String> filterAccount) throws Exception{
+		logger.info("See booking info:" +
+				" accountName=\"" + accountName + "\"," +
+				" hotelCode=\"" + code + "\"");
+		Hotel2000 hotel2000 = getContract(accountName);
+		Optional<String> filterAddress = filterAccount.map(account -> accountService.getAddress(accountName).orElse(account));
+		try{
+
+			hotelService.getHotel(hotel2000, code, false, true, false)
+					.flatMap(hotel -> hotelService.getBooking(hotel2000, hotel.getBookingsId()))
+					.doOnNext(bookings -> {
+						filterRoom.ifPresent(index -> bookings.removeIf(booking -> booking.getId() == index));
+						filterAddress.ifPresent(address -> bookings.removeIf(booking -> booking.getClientAddress().equals(address)));
+					})
+					.toBlocking()
+					.subscribe(
+							bookings -> logger.info("OK: " + bookings.toString()),
+							throwable -> logger.error("KO: getHotel fail", throwable)
+					);
+		}catch(Exception e){
+			logger.error("KO: getHotel fail", e);
+		}
+	}
+
+
+	void infoActiveBookings(String accountName, String code, Optional<Integer> filterRoom, Optional<String> filterAccount) throws Exception{
+		logger.info("See active booking info:" +
+				" accountName=\"" + accountName + "\"," +
+				" hotelCode=\"" + code + "\"");
+		Hotel2000 hotel2000 = getContract(accountName);
+		Optional<String> filterAddress = filterAccount.map(account -> accountService.getAddress(accountName).orElse(account));
+		try{
+
+			hotelService.getHotel(hotel2000, code, true, false, false)
+					.flatMap(hotel -> hotelService.getBooking(hotel2000, hotel.getActiveBookingsId()))
+					.doOnNext(bookings -> {
+						filterRoom.ifPresent(index -> bookings.removeIf(booking -> booking.getId() == index));
+						filterAddress.ifPresent(address -> bookings.removeIf(booking -> booking.getClientAddress().equals(address)));
+					})
+					.toBlocking()
+					.subscribe(
+							bookings -> logger.info("OK: " + bookings.toString()),
+							throwable -> logger.error("KO: getHotel fail", throwable)
+					);
 		}catch(Exception e){
 			logger.error("KO: getHotel fail", e);
 		}
@@ -103,5 +156,4 @@ class ConsoleHotelService{
 			logger.error("KO: withdraw fail", e);
 		}
 	}
-
 }
