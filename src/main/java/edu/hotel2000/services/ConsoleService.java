@@ -117,7 +117,7 @@ public class ConsoleService implements CommandExec{
 		// Hotel activeBookings
 		params = commandeParser.parse(commande, "hotel|h activeBookings|ab <code> [room]=-1 [client]=null [account]=" + acc).orElse(null);
 		if(params != null){
-			hotelService.infoBookings(
+			hotelService.infoActiveBookings(
 					params.get("account"),
 					params.get("code"),
 					optionalExclude(params.get("room"), "-1").map(Integer::parseInt),
@@ -210,7 +210,7 @@ public class ConsoleService implements CommandExec{
 		// Date
 		params = commandeParser.parse(commande, "date|d").orElse(null);
 		if(params != null){
-			logger.info("Current date : " + Util.datestempToString(System.currentTimeMillis()));
+			logger.info("Current date : " + Util.timestempToString(System.currentTimeMillis()));
 			return;
 		}
 

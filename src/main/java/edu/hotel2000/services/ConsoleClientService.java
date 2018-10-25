@@ -6,7 +6,6 @@ import edu.hotel2000.models.ConsoleEnv;
 import lombok.AllArgsConstructor;
 import org.apache.log4j.Logger;
 import org.web3j.crypto.CipherException;
-import org.web3j.crypto.Credentials;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.gas.DefaultGasProvider;
@@ -36,8 +35,8 @@ public class ConsoleClientService{
 		logger.info("Check if canBook:" +
 				" accountName=\"" + accountName + "\"," +
 				" hotelCode=\"" + code + "\"," +
-				" start=\"" + Util.datestempToString(start) + "\"," +
-				" end=\"" + Util.datestempToString(end) + "\"," +
+				" start=\"" + Util.timestempToString(start) + "\"," +
+				" end=\"" + Util.timestempToString(end) + "\"," +
 				" roomId=" + room );
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, String> res = hotel2000.canBook(code, start, end, BigInteger.valueOf(room)).send();
@@ -54,8 +53,8 @@ public class ConsoleClientService{
 		logger.info("Try to view priceBook:" +
 				" accountName=\"" + accountName + "\"," +
 				" hotelCode=\"" + code + "\"," +
-				" start=\"" + Util.datestempToString(start) + "\"," +
-				" end=\"" + Util.datestempToString(end) + "\"," +
+				" start=\"" + Util.timestempToString(start) + "\"," +
+				" end=\"" + Util.timestempToString(end) + "\"," +
 				" roomId=" + room );
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, BigInteger> res = hotel2000.getBookingPrice(code, start, end).send();
@@ -71,8 +70,8 @@ public class ConsoleClientService{
 		logger.info("Try to book:" +
 				" accountName=\"" + accountName + "\"," +
 				" hotelCode=\"" + code + "\"," +
-				" start=\"" + Util.datestempToString(start) + "\"," +
-				" end=\"" + Util.datestempToString(end) + "\"," +
+				" start=\"" + Util.timestempToString(start) + "\"," +
+				" end=\"" + Util.timestempToString(end) + "\"," +
 				" roomId=" + room + "," +
 				" wei=" + weiO.map(Objects::toString).orElse("auto") );
 		Hotel2000 hotel2000 = getContract(accountName);

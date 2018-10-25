@@ -63,13 +63,13 @@ public class App{
 				.build();
 
 		if(SHOW_DATE){
-			logger.info("Current date : " + Util.datestempToString(System.currentTimeMillis()));
+			logger.info("Current date : " + Util.timestempToString(System.currentTimeMillis()));
 			new Thread(() -> {
 				try{
 					while(true){
 						long whiteTime = Util.TIME_IN_DATESTAMP - (System.currentTimeMillis() % Util.TIME_IN_DATESTAMP);
 						Thread.sleep(whiteTime+1);
-						logger.info("Current date : " + Util.datestempToString(System.currentTimeMillis()));
+						logger.info("Current date : " + Util.timestempToString(System.currentTimeMillis()));
 					}
 				}catch(InterruptedException e){
 					logger.error("SHOW_DATE: InterruptedException",e);

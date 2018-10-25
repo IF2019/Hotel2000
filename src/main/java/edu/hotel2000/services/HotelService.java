@@ -17,7 +17,7 @@ public class HotelService{
 	private void applieBookingInRooms(Hotel hotel, Collection<Booking> bookings){
 		bookings.forEach(booking -> {
 			Map<Long, Integer> roomBookins = hotel.getRooms()[booking.getRoomId()].getBooking();
-			for(long i = booking.getStart(); i < booking.getEnd(); i++){
+			for(long i = booking.getStart().getDays(); i < booking.getEnd().getDays(); i++){
 				roomBookins.put(i, booking.getId());
 			}
 		});

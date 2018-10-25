@@ -15,8 +15,8 @@ public class Booking{
 	BigInteger price;
 	BigInteger createdAt;  // Timestamp
 	int id;
-	long start;
-	long end;
+	DateStamp start;
+	DateStamp end;
 	int roomId;
 
 	public Booking(Tuple8<String, String, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger> data){
@@ -25,8 +25,8 @@ public class Booking{
 		price = data.getValue3();
 		createdAt = data.getValue4();
 		id = data.getValue5().intValue();
-		start = data.getValue6().longValue();
-		end = data.getValue7().longValue();
+		start = DateStamp.of(data.getValue6());
+		end = DateStamp.of(data.getValue7());
 		roomId = data.getValue8().intValue();
 	}
 }

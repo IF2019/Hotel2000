@@ -3,7 +3,6 @@ package edu.hotel2000;
 import org.web3j.utils.Async;
 import rx.Observable;
 import rx.functions.Action0;
-import rx.functions.Action1;
 
 import java.math.BigInteger;
 import java.text.Format;
@@ -12,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,13 +40,24 @@ public class Util{
 		return BigInteger.valueOf(parser.parse(date).getTime() / TIME_SCALE);
 	}
 
+	public static String timestempToString(BigInteger dateStamp){
+		return timestempToString(dateStamp.longValue());
+	}
+
+	public static String timestempToString(long dateStamp){
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		format.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return format.format(new Date(dateStamp * TIME_SCALE));
+	}
+
 	public static String datestempToString(BigInteger dateStamp){
 		return datestempToString(dateStamp.longValue());
 	}
 
 	public static String datestempToString(long dateStamp){
-		Format format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		return format.format(new Date(dateStamp * TIME_SCALE));
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		format.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return format.format(new Date(dateStamp * 86400000));
 	}
 
 	public static <T> Observable<List<T>> fork(List<Observable<T>> observables){
