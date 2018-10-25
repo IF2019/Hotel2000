@@ -11,5 +11,5 @@ import java.util.Map;
 @Data
 @ToString
 public class Room{
-	private Map<Long, Integer> booking = new HashMap<>(); // Daystamp => BookingID
+	private Map<DateStamp, Integer> booking = new HashMap<>(); // Daystamp => BookingID
 }

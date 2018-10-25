@@ -3,6 +3,7 @@ package edu.hotel2000.services;
 import edu.hotel2000.Util;
 import edu.hotel2000.contract.Hotel2000;
 import edu.hotel2000.models.Booking;
+import edu.hotel2000.models.DateStamp;
 import edu.hotel2000.models.Hotel;
 import org.apache.log4j.Logger;
 import rx.Observable;
@@ -16,9 +17,9 @@ public class HotelService{
 
 	private void applieBookingInRooms(Hotel hotel, Collection<Booking> bookings){
 		bookings.forEach(booking -> {
-			Map<Long, Integer> roomBookins = hotel.getRooms()[booking.getRoomId()].getBooking();
+			Map<DateStamp, Integer> roomBookins = hotel.getRooms()[booking.getRoomId()].getBooking();
 			for(long i = booking.getStart().getDays(); i < booking.getEnd().getDays(); i++){
-				roomBookins.put(i, booking.getId());
+				roomBookins.put(DateStamp.of(i), booking.getId());
 			}
 		});
 	}

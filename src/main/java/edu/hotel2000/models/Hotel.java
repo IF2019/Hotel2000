@@ -27,6 +27,7 @@ public class Hotel{
 		owner = data.getValue1();
 		rooms = new Room[data.getValue2().intValue()];
 		Arrays.setAll(rooms, i -> new Room());
+
 		activeBookingsId = new int[data.getValue3().intValue()];
 		bookingsId = new int[data.getValue4().intValue()];
 		code = data.getValue5();
