@@ -4,6 +4,7 @@ import lombok.*;
 import org.web3j.tuples.generated.Tuple9;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,6 +26,7 @@ public class Hotel{
 	public Hotel(Tuple9<String, BigInteger, BigInteger, BigInteger, String, String, String, BigInteger, BigInteger> data){
 		owner = data.getValue1();
 		rooms = new Room[data.getValue2().intValue()];
+		Arrays.setAll(rooms, i -> new Room());
 		activeBookingsId = new int[data.getValue3().intValue()];
 		bookingsId = new int[data.getValue4().intValue()];
 		code = data.getValue5();
