@@ -28,8 +28,8 @@ public class Hotel{
 		rooms = new Room[data.getValue2().intValue()];
 		Arrays.setAll(rooms, i -> new Room());
 
-		activeBookingsId = new int[data.getValue3().intValue()];
-		bookingsId = new int[data.getValue4().intValue()];
+		bookingsId = new int[data.getValue3().intValue()];
+		activeBookingsId = new int[data.getValue4().intValue()];
 		code = data.getValue5();
 		title = data.getValue6();
 		description = data.getValue7();
