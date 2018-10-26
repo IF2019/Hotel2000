@@ -2,6 +2,7 @@ package edu.hotel2000.services;
 
 import edu.hotel2000.contract.Hotel2000;
 import edu.hotel2000.models.ConsoleEnv;
+import edu.hotel2000.models.Money;
 import lombok.AllArgsConstructor;
 import org.apache.log4j.Logger;
 import org.web3j.crypto.CipherException;
@@ -110,7 +111,7 @@ class ConsoleHotelService{
 
 	}
 
-	void createHotel(String accountName, String code, int nbRoom, BigInteger price) throws Exception{
+	void createHotel(String accountName, String code, int nbRoom, Money price) throws Exception{
 		logger.info("Try create hotel:" +
 				" accountName=\"" + accountName + "\"," +
 				" hotelCode=\"" + code + "\"" +

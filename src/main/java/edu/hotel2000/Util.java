@@ -1,7 +1,6 @@
 package edu.hotel2000;
 
 import edu.hotel2000.models.Money;
-import javafx.scene.chart.ValueAxis;
 import org.web3j.utils.Async;
 import org.web3j.utils.Convert;
 import rx.Observable;
@@ -9,7 +8,6 @@ import rx.functions.Action0;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,9 +22,9 @@ public class Util{
 
 	private static Pattern dateOffset = Pattern.compile("^(\\+?)([0-9]+)(d?)$");
 
-	public static int TIME_SCALE = 1000;
+	public static int TIME_SCALE = 720;
 
-	public static int TIME_IN_DATESTAMP = 86400000 / TIME_SCALE;
+	public static int TIME_IN_DATESTAMP = 86400 / TIME_SCALE;
 
 	public static BigInteger parseData(String date) throws ParseException{
 		Matcher matcher = dateOffset.matcher(date);
@@ -36,22 +34,22 @@ public class Util{
 				time *= TIME_IN_DATESTAMP;
 			}
 			if(matcher.group(1).equals("+")){
-				time += System.currentTimeMillis();
+				time += System.currentTimeMillis()/1000;
 			}
 			return BigInteger.valueOf(time);
 		}
 		SimpleDateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
-		return BigInteger.valueOf(parser.parse(date).getTime() / TIME_SCALE);
+		return BigInteger.valueOf(parser.parse(date).getTime() / 1000 / TIME_SCALE);
 	}
 
 	public static String timestempToString(BigInteger dateStamp){
 		return timestempToString(dateStamp.longValue());
 	}
 
-	public static String timestempToString(long dateStamp){
+	public static String timestempToString(long timeStamp){
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		format.setTimeZone(TimeZone.getTimeZone("UTC"));
-		return format.format(new Date(dateStamp * TIME_SCALE));
+		return format.format(new Date(timeStamp * TIME_SCALE * 1000));
 	}
 
 	public static String datestempToString(BigInteger dateStamp){
@@ -77,7 +75,8 @@ public class Util{
 				synchronized(nbObservable){
 					nbObservable.set(nbObservable.get() - 1);
 					if(nbObservable.get() > 0) return;
-					if(nbObservable.get() < 0) throw new RuntimeException("BIG FAILURE: nbObservable="+nbObservable.get());
+					if(nbObservable.get() < 0)
+						throw new RuntimeException("BIG FAILURE: nbObservable=" + nbObservable.get());
 				}
 				if(nbObservable.get() == 0){
 					if(errors.isEmpty()){
@@ -103,23 +102,28 @@ public class Util{
 								res.add(obj);
 							}
 						},
-						(failure)->{
+						(failure) -> {
 							synchronized(errors){
 								errors.add(failure);
 							}
 							countDown.call();
 						},
 						countDown
-						));
+				));
 			});
 		});
 	}
 
 	public static Money parseMoney(String value){
-		Pattern pattern = Pattern.compile("^(\\-?[0-9]+(\\.[0-9]*)?)([a-zA-Z]*)$");
+		Pattern pattern = Pattern.compile("^(\\-?[0-9\\_]+(\\.[0-9\\_ ]*)?) *([a-zA-Z]*)$");
 		Matcher matcher = pattern.matcher(value);
-		if(!matcher.matches()) throw new RuntimeException("Value is not ETHER : "+ value);
-		Convert.Unit unit = Convert.Unit.valueOf(matcher.group(3).toUpperCase());
+		if(!matcher.matches()) throw new RuntimeException("Value is not ETHER : " + value);
+		Convert.Unit unit;
+		if(matcher.group(3).isEmpty()) {
+			unit = Convert.Unit.WEI;
+		}else{
+			unit = Convert.Unit.valueOf(matcher.group(3).toUpperCase());
+		}
 		BigDecimal val = Convert.toWei(matcher.group(1), unit);
 		return Money.of(val.toBigInteger());
 	}

@@ -2,7 +2,7 @@ pragma solidity ^0.4.17;
 import {Lib} from "./lib.sol";
 
 contract Hotel2000 {
-	uint256 constant TIME_SCALE = 1000;
+	uint256 constant TIME_SCALE = 720;
 
 	uint32 bookingIdInc = 1;
 	mapping(uint32    => Lib.Booking) bookings; // ResevationID => Reservation
@@ -212,10 +212,33 @@ contract Hotel2000 {
 	}
 
 	function timestampToDaystamp(uint256 timestamp) pure public returns(uint32) {
-		return uint32(timestamp / (86400000 / TIME_SCALE));
+		return uint32(timestamp / (86400 / TIME_SCALE));
 	}
 
 	function test() public pure returns (string) {
 		return "test success";
 	}
+
+//	function test() public view returns (string, uint, uint, uint) {
+//		Lib.Hotel   storage hotel = hotels["Test"];
+//		uint256             transfer = 0;
+//		uint32[]           test;
+//		test.length = hotel.active_bookings.length;
+//		for (uint32 j = 0; j < test.length; j++) test[j] = hotel.active_bookings[i];
+//
+//		if(!hotel.isset) return ("Hotel Test not found", 0,0,0);
+//
+//		for (uint32 i = 0; i < test.length; ) {
+//			Lib.Booking memory booking;
+//			booking = bookings[hotel.active_bookings[i]];
+//			if (booking.end < timestampToDaystamp(now)) {
+//				transfer += booking.price;
+//				hotel.active_bookings[i] = hotel.active_bookings[--test.length];
+//			} else {
+//				i++;
+//				return("nop", booking.end, now, timestampToDaystamp(now));
+//			}
+//		}
+//		return("finish", test.length, transfer, 0);
+//	}
 }

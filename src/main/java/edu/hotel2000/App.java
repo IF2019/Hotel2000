@@ -64,13 +64,13 @@ public class App{
 				.build();
 
 		if(SHOW_DATE){
-			logger.info("Current date : " + Util.timestempToString(System.currentTimeMillis()));
+			logger.info("Current date : " + Util.timestempToString(System.currentTimeMillis()/1000));
 			new Thread(() -> {
 				try{
 					while(true){
-						long whiteTime = Util.TIME_IN_DATESTAMP - (System.currentTimeMillis() % Util.TIME_IN_DATESTAMP);
+						long whiteTime = (Util.TIME_IN_DATESTAMP*1000) - (System.currentTimeMillis() % (Util.TIME_IN_DATESTAMP*1000));
 						Thread.sleep(whiteTime+1);
-						logger.info("Current date : " + Util.timestempToString(System.currentTimeMillis()));
+						logger.info("Current date : " + Util.timestempToString(System.currentTimeMillis()/1000));
 					}
 				}catch(InterruptedException e){
 					logger.error("SHOW_DATE: InterruptedException",e);
@@ -78,6 +78,7 @@ public class App{
 			}).start();
 		}
 
+		logger.info("Start console : account=" + env.getAccountName() + " contract="+env.getContractAddress());
 		ConsoleService consoleService = new ConsoleService(env, accountService);
 
 		InputCommandReader reader = new InputCommandReader(System.in, consoleService);

@@ -74,7 +74,7 @@ public class ConsoleService implements CommandExec{
 					params.get("account"),
 					params.get("code"),
 					Integer.parseInt(params.get("nbRoom")),
-					new BigInteger(params.get("price"))
+					Util.parseMoney(params.get("price"))
 			);
 			return;
 		}
@@ -87,7 +87,7 @@ public class ConsoleService implements CommandExec{
 					params.get("account"),
 					params.get("code"),
 					Integer.parseInt(params.get("nbRoom")),
-					new BigInteger(params.get("price"))
+					Util.parseMoney(params.get("price"))
 			);
 			return;
 		}
@@ -161,7 +161,7 @@ public class ConsoleService implements CommandExec{
 					Util.parseData(params.get("start")),
 					Util.parseData(params.get("end")),
 					Integer.parseInt(params.get("roomId")),
-					Optional.ofNullable(params.get("money")).map(Money::new)
+					Optional.ofNullable(params.get("money")).map(Util::parseMoney)
 			);
 			return;
 		}

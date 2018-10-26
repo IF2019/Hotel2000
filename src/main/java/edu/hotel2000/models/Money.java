@@ -61,16 +61,16 @@ public class Money extends BigInteger{
 		String unit = units.get(nbDec);
 		if(nbDec == 0) return stringValue = data + unit;
 		int subPos = data.length() - nbDec;
-		return stringValue = data.substring(0, subPos) + "." + data.substring(subPos, subPos + 3) + ' ' + unit;
+		return stringValue = data.substring(0, subPos) + "," + data.substring(subPos, subPos + 3) + ' ' + unit;
 	}
 
 	public String toWeyString(){
 		String data = super.toString();
-		int nbSpace = (data.length()-1) / 3;
+		int nbSpace = (data.length() - 1) / 3;
 		int offset = data.length() - nbSpace * 3;
-		String res = data.substring(0,offset);
+		String res = data.substring(0, offset);
 		for(int i = 0; i < nbSpace; i++){
-			res += ' ' + data.substring(offset + i *3, offset + i *3+3);
+			res += ' ' + data.substring(offset + i * 3, offset + i * 3 + 3);
 		}
 		return res;
 	}
