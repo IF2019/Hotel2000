@@ -188,7 +188,7 @@ public class ConsoleService implements CommandExec{
 		if(params != null){
 			if(params.containsKey("newValue")){
 				env.setContractAddress(params.get("newValue"));
-				logger.info("Set Current contract value to : " + params.get("newValue"));
+				logger.info("Set current contract value to : " + params.get("newValue"));
 			}else{
 				logger.info("Current contract is: " + env.getContractAddress());
 			}

@@ -1,6 +1,7 @@
 package edu.hotel2000.services;
 
 import edu.hotel2000.contract.Hotel2000;
+import edu.hotel2000.models.Booking;
 import edu.hotel2000.models.ConsoleEnv;
 import edu.hotel2000.models.Money;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.web3j.tx.gas.DefaultGasProvider;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -37,7 +39,15 @@ class ConsoleHotelService{
 		Hotel2000 hotel2000 = getContract(accountName);
 		try{
 			hotelService.getHotel(hotel2000, code).toBlocking().subscribe(
-					hotel -> logger.info("OK: " + hotel.toString()),
+					hotel -> {
+						logger.info("OK: " + hotel);
+//						logger.info("Title: " + hotel.getTitle());
+						logger.info("RoomsPrice: " + hotel.getPrice());
+						logger.info("Owner: " + hotel.getOwner());
+						logger.info("Rooms: " + Arrays.deepToString(hotel.getRooms()));
+						logger.info("Bookings: " + Arrays.toString(hotel.getBookingsId()));
+						logger.info("ActiveBookings: " + Arrays.toString(hotel.getActiveBookingsId()));
+					},
 					throwable -> logger.error("KO: getHotel fail", throwable)
 			);
 		}catch(Exception e){
@@ -61,7 +71,12 @@ class ConsoleHotelService{
 					})
 					.toBlocking()
 					.subscribe(
-							bookings -> logger.info("OK: " + bookings.toString()),
+							bookings -> {
+								logger.info("OK: " + bookings.toString());
+								for(Booking b: bookings){
+									logger.info(b.getId() + ": " +b);
+								}
+							},
 							throwable -> logger.error("KO: getHotel fail", throwable)
 					);
 		}catch(Exception e){
@@ -86,7 +101,12 @@ class ConsoleHotelService{
 					})
 					.toBlocking()
 					.subscribe(
-							bookings -> logger.info("OK: " + bookings.toString()),
+							bookings -> {
+								logger.info("OK: " + bookings.toString());
+								for(Booking b: bookings){
+									logger.info(b.getId() + ": " +b);
+								}
+							},
 							throwable -> logger.error("KO: getHotel fail", throwable)
 					);
 		}catch(Exception e){
@@ -104,9 +124,9 @@ class ConsoleHotelService{
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, String> res = hotel2000.canCreateHotel(code, BigInteger.valueOf(nbRoom), price).send();
 		if(res.getValue1()){
-			logger.info("OK: " + accountName + " can create " + code + " hotel");
+			logger.info("OK: Account \"" + accountName + "\" can create " + code + " hotel");
 		}else{
-			logger.info("KO: " + accountName + " can't create " + code + " hotel: " + res.getValue2());
+			logger.info("KO: Account \"" + accountName + "\" can't create " + code + " hotel: " + res.getValue2());
 		}
 
 	}
@@ -141,11 +161,13 @@ class ConsoleHotelService{
 		Hotel2000 hotel2000 = getContract(accountName);
 		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{
+			logger.info("Before withdraw:");
 			consoleUtilService.showBalance(accountName);
 			TransactionReceipt res = hotel2000.withdraw(code).send();
 			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
 			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
 				logger.info("OK: withdraw success");
+				logger.info("After withdraw:");
 				consoleUtilService.showBalance(accountName);
 			}else{
 				logger.error("KO: withdraw fail");

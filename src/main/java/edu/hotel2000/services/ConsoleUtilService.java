@@ -6,23 +6,14 @@ import lombok.AllArgsConstructor;
 import org.apache.log4j.Logger;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
-import org.web3j.crypto.RawTransaction;
-import org.web3j.crypto.TransactionEncoder;
-import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.request.Transaction;
-import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
-import org.web3j.utils.Numeric;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.concurrent.ExecutionException;
 
 @AllArgsConstructor
 public class ConsoleUtilService{
@@ -39,19 +30,19 @@ public class ConsoleUtilService{
 	public void showTransactionReceipt(TransactionReceipt tr, BigInteger gasLimit){
 
 		if(isSuccess(tr, gasLimit)){
-			logger.info("Transaction ==================== SUCCESS ====================");
-			logger.info("Status: " +tr.getStatus());
-			logger.info("ContractAddress: " +tr.getContractAddress());
+			logger.info("==================== Transaction: SUCCESS ====================");
+			logger.info("From: " +tr.getFrom());
+			logger.info("To: " +tr.getTo());
+			logger.info("Block: " + tr.getBlockNumber() + " ("+ tr.getBlockHash() +")");
 			logger.info("GasUsed: " +tr.getGasUsed());
-			logger.info("All Data: " + tr.toString());
-			logger.info("Transaction ==================== SUCCESS ====================");
+			logger.info("==================== Transaction: SUCCESS ====================");
 		}else {
-			logger.warn("Transaction ==================== FAIL =======================");
-			logger.warn("Status: " +tr.getStatus());
-			logger.warn("ContractAddress: " +tr.getContractAddress());
+			logger.warn("==================== Transaction: FAIL =======================");
+			logger.warn("From: " +tr.getFrom());
+			logger.warn("To: " +tr.getTo());
+			logger.warn("Block: " + tr.getBlockNumber() + " ("+ tr.getBlockHash() +")");
 			logger.warn("GasUsed: " +tr.getGasUsed());
-			logger.warn("All Data: " + tr.toString());
-			logger.warn("Transaction ==================== FAIL =======================");
+			logger.warn("==================== Transaction: FAIL =======================");
 		}
 	}
 

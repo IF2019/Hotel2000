@@ -42,9 +42,9 @@ public class ConsoleClientService{
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, String> res = hotel2000.canBook(code, start, end, BigInteger.valueOf(room)).send();
 		if(res.getValue1()){
-			logger.info("OK: " + accountName + " can book this roomId");
+			logger.info("OK: Account \"" + accountName + "\" can book this roomId");
 		}else{
-			logger.info("KO: " +accountName + " can't book this roomId: " + res.getValue2());
+			logger.info("KO: Account \"" + accountName + "\" can't book this roomId: " + res.getValue2());
 		}
 
 	}
@@ -60,7 +60,7 @@ public class ConsoleClientService{
 		Hotel2000 hotel2000 = getContract(accountName);
 		Tuple2<Boolean, BigInteger> res = hotel2000.getBookingPrice(code, start, end).send();
 		if(res.getValue1()){
-			logger.info("OK: price :  " + res.getValue2());
+			logger.info("OK: price :  " + Money.of(res.getValue2()));
 		}else{
 			logger.error("KO: fail to compute price!");
 		}
@@ -78,7 +78,7 @@ public class ConsoleClientService{
 		Hotel2000 hotel2000 = getContract(accountName);
 		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{
-			BigInteger wei;
+			Money wei;
 			if(weiO.isPresent()){
 				wei = weiO.get();
 			} else {
@@ -88,7 +88,7 @@ public class ConsoleClientService{
 					logger.error("KO: Compute price failed");
 					return;
 				}
-				wei = res.getValue2();
+				wei = Money.of(res.getValue2());
 				logger.info("price:" + wei);
 			}
 			logger.info("Compute booking ...");
@@ -97,7 +97,7 @@ public class ConsoleClientService{
 			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
 				logger.info("OK: Booking success");
 			}else {
-				logger.error("KO: Booking fail (use canBook for view error)");
+				logger.error("KO: Booking fail (use canBook to view error)");
 			}
 		}catch(Exception e){
 			logger.error("KO: Booking fail!", e);
