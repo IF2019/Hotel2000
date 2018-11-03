@@ -56,7 +56,7 @@ public class HotelService{
 			logger.debug("Search id for activeBookingsId[" + i + "]");
 			int index = i;
 			observables.add(
-					contract.getHotelBookingId(hotel.getCode(), BigInteger.valueOf(i)).observable()
+					contract.getHotelActiveBookingId(hotel.getCode(), BigInteger.valueOf(i)).observable()
 							.map(BigInteger::intValue)
 							.doOnNext(id -> activeBookingsId[index] = id)
 			);
