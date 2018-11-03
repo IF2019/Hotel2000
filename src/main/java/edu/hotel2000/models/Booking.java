@@ -1,7 +1,7 @@
 package edu.hotel2000.models;
 
 import lombok.*;
-import org.web3j.tuples.generated.Tuple8;
+import org.web3j.tuples.generated.Tuple9;
 
 import java.math.BigInteger;
 
@@ -18,8 +18,9 @@ public class Booking{
 	DateStamp start;
 	DateStamp end;
 	int roomId;
+	BookingsStatus status;
 
-	public Booking(Tuple8<String, String, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger> data){
+	public Booking(Tuple9<String, String, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger, BigInteger> data){
 		clientAddress = data.getValue1();
 		hotelCode = data.getValue2();
 		price = Money.of(data.getValue3());
@@ -28,5 +29,6 @@ public class Booking{
 		start = DateStamp.of(data.getValue6());
 		end = DateStamp.of(data.getValue7());
 		roomId = data.getValue8().intValue();
+		status = BookingsStatus.valueOf(data.getValue9());
 	}
 }

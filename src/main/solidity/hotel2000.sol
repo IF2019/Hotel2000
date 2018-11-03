@@ -85,7 +85,7 @@ contract Hotel2000 {
 		return(hotel.active_bookings[index]);
 	}
 
-	function getBooking(uint32 id) public view returns(address, string, uint256, uint256, uint32, uint32, uint32, uint32){
+	function getBooking(uint32 id) public view returns(address, string, uint256, uint256, uint32, uint32, uint32, uint32, Lib.BookingStatus){
 		Lib.Booking storage booking = bookings[id];
 		require(booking.isset, "booking not found");
 		return(
@@ -96,7 +96,8 @@ contract Hotel2000 {
 		booking.id,
 		booking.start,      // Daystamp
 		booking.end,        // Daystamp
-		booking.room       // Index
+		booking.room,       // Index
+		booking.status
 		);
 	}
 
@@ -177,6 +178,7 @@ contract Hotel2000 {
 		booking.start     = _start;
 		booking.end       = _end;
 		booking.room      = _room;
+		booking.status    = Lib.BookingStatus.Active;
 
 		require(msg.value >= booking.price, "you must send enough money to pay for the booking");
 
@@ -195,6 +197,7 @@ contract Hotel2000 {
 			Lib.Booking storage booking = bookings[hotel.active_bookings[i]];
 			if (booking.end < timestampToDaystamp(now)) {
 				transfer += booking.price;
+				booking.status = Lib.BookingStatus.Closed;
 				hotel.active_bookings[i] = hotel.active_bookings[hotel.active_bookings.length-1];
 				hotel.active_bookings.length--;
 			} else {

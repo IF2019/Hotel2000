@@ -1,6 +1,9 @@
 pragma solidity ^0.4.17;
 
 library Lib {
+
+	enum BookingStatus { Active, Cancelled, Closed }
+
 	struct Booking {
 		address client;
 		string  hotelCode;
@@ -10,6 +13,7 @@ library Lib {
 		uint32  start;      // Daystamp
 		uint32  end;        // Daystamp
 		uint32  room;       // Index
+		BookingStatus   status;
 		bool    isset;      // Should be true
 	}
 
