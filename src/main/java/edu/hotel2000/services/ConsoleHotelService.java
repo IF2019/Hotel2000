@@ -25,6 +25,7 @@ class ConsoleHotelService{
 	private AccountService accountService;
 	private ConsoleUtilService consoleUtilService;
 	private HotelService hotelService;
+	private BookingService bookingService;
 
 	Hotel2000 getContract(String accountName) throws IOException, CipherException{
 		return accountService.findFromConfigOption(accountName)
@@ -64,7 +65,7 @@ class ConsoleHotelService{
 		try{
 
 			hotelService.getHotel(hotel2000, code, false, true, false)
-					.flatMap(hotel -> hotelService.getBooking(hotel2000, hotel.getBookingsId()))
+					.flatMap(hotel -> bookingService.getBooking(hotel2000, hotel.getBookingsId()))
 					.doOnNext(bookings -> {
 						filterRoom.ifPresent(index -> bookings.removeIf(booking -> booking.getId() == index));
 						filterAddress.ifPresent(address -> bookings.removeIf(booking -> booking.getClientAddress().equals(address)));
@@ -94,7 +95,7 @@ class ConsoleHotelService{
 		try{
 
 			hotelService.getHotel(hotel2000, code, true, false, false)
-					.flatMap(hotel -> hotelService.getBooking(hotel2000, hotel.getActiveBookingsId()))
+					.flatMap(hotel -> bookingService.getBooking(hotel2000, hotel.getActiveBookingsId()))
 					.doOnNext(bookings -> {
 						filterRoom.ifPresent(index -> bookings.removeIf(booking -> booking.getId() == index));
 						filterAddress.ifPresent(address -> bookings.removeIf(booking -> booking.getClientAddress().equals(address)));

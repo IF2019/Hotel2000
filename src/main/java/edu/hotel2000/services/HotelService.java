@@ -5,6 +5,7 @@ import edu.hotel2000.contract.Hotel2000;
 import edu.hotel2000.models.Booking;
 import edu.hotel2000.models.DateStamp;
 import edu.hotel2000.models.Hotel;
+import lombok.AllArgsConstructor;
 import org.apache.log4j.Logger;
 import rx.Observable;
 
@@ -12,8 +13,10 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class HotelService{
 	private static final Logger logger = Logger.getLogger(HotelService.class);
+	private BookingService bookingService;
 
 	private void applieBookingInRooms(Hotel hotel, Collection<Booking> bookings){
 		bookings.forEach(booking -> {
@@ -24,19 +27,8 @@ public class HotelService{
 		});
 	}
 
-	public Observable<Booking> getBooking(Hotel2000 contract, int id){
-		return contract.getBooking(BigInteger.valueOf(id)).observable().map(Booking::new);
-	}
-
 	public Map<Integer, Booking> indexBooking(List<Booking> bookings){
 		return bookings.stream().collect(Collectors.toMap(Booking::getId, booking -> booking));
-	}
-
-	public Observable<List<Booking>> getBooking(Hotel2000 contract, int[] ids){
-
-		return Util.fork(Arrays.stream(ids)
-				.mapToObj(id -> getBooking(contract, id))
-				.collect(Collectors.toCollection(ArrayList::new)));
 	}
 
 	public Observable<Hotel> insertHotelBookingsId(Hotel2000 contract, Hotel hotel){
@@ -79,7 +71,7 @@ public class HotelService{
 		if(withBookingsId){
 			res=res.flatMap(hotel -> insertHotelBookingsId(contract, hotel));
 			if(withRoomBookings){
-				res = res.flatMap(hotel -> getBooking(contract, hotel.getBookingsId())
+				res = res.flatMap(hotel -> bookingService.getBooking(contract, hotel.getBookingsId())
 						.doOnNext(bookings -> applieBookingInRooms(hotel, bookings))
 						.map(bookingMap -> hotel)
 				);

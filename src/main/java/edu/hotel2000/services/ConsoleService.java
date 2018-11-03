@@ -3,10 +3,8 @@ package edu.hotel2000.services;
 import edu.hotel2000.Config;
 import edu.hotel2000.Util;
 import edu.hotel2000.models.ConsoleEnv;
-import edu.hotel2000.models.Money;
 import org.apache.log4j.Logger;
 
-import java.math.BigInteger;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,18 +17,24 @@ public class ConsoleService implements CommandExec{
 	private ConsoleUtilService utilService;
 	private CommandeParser commandeParser;
 	private ConsoleClientService clientService;
+	private ConsoleBookingService bookingService;
 
 	public ConsoleService(ConsoleEnv env, AccountService accountService){
 		this.env = env;
+
+		BookingService bookingService = new BookingService();
+		HotelService hotelService = new HotelService(bookingService);
+
 		this.utilService = new ConsoleUtilService(env, accountService);
-		this.hotelService = new ConsoleHotelService(env, accountService, utilService, new HotelService());
+		this.hotelService = new ConsoleHotelService(env, accountService, utilService, hotelService, bookingService);
 		this.commandeParser = new CommandeParser();
 		this.clientService = new ConsoleClientService(env, accountService, utilService);
+		this.bookingService = new ConsoleBookingService(env, accountService, bookingService);
 	}
 
-	private <T> Optional<T> optionalExclude(T value, T ...excludes){
+	private <T> Optional<T> optionalExclude(T value, T... excludes){
 		if(value == null) return Optional.empty();
-		for(T exclude: excludes){
+		for(T exclude : excludes){
 			if(value.equals(exclude)) return Optional.empty();
 		}
 		return Optional.of(value);
@@ -128,7 +132,7 @@ public class ConsoleService implements CommandExec{
 		}
 
 		// Hotel withdraw
-		params = commandeParser.parse(commande, "hotel|h withdraw|w <code> [account]="+acc).orElse(null);
+		params = commandeParser.parse(commande, "hotel|h withdraw|w <code> [account]=" + acc).orElse(null);
 		if(params != null){
 			hotelService.withdraw(
 					params.get("account"),
@@ -167,7 +171,6 @@ public class ConsoleService implements CommandExec{
 		}
 
 
-
 		// Client priceBook
 		params = commandeParser.parse(commande, "clientAddress|c priceBook|pb <code> <start> <end> <roomId> [account]=" + acc).orElse(null);
 		if(params != null){
@@ -181,6 +184,16 @@ public class ConsoleService implements CommandExec{
 			return;
 		}
 
+
+		// Booking info
+		params = commandeParser.parse(commande, "booking|b info|i <bookingId> [account]=" + acc).orElse(null);
+		if(params != null){
+			bookingService.infoBooking(
+					params.get("account"),
+					Integer.parseInt(params.get("bookingId"))
+			);
+			return;
+		}
 
 
 		// Contract
