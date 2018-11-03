@@ -22,7 +22,7 @@ public class Util{
 
 	private static Pattern dateOffset = Pattern.compile("^(\\+?)([0-9]+)(d?)$");
 
-	public static int TIME_SCALE = 720;
+	public static int TIME_SCALE = 1440;
 
 	public static int TIME_IN_DATESTAMP = 86400 / TIME_SCALE;
 

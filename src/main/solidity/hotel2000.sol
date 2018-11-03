@@ -2,7 +2,7 @@ pragma solidity ^0.4.17;
 import {Lib} from "./lib.sol";
 
 contract Hotel2000 {
-	uint256 constant TIME_SCALE = 720;
+	uint256 constant TIME_SCALE = 1440;
 
 	uint32 bookingIdInc = 1;
 	mapping(uint32    => Lib.Booking) bookings; // ResevationID => Reservation
