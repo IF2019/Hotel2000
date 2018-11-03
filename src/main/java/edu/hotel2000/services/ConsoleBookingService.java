@@ -27,21 +27,21 @@ public class ConsoleBookingService{
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
 	}
 
-	void infoBooking(String accountName, int id) throws Exception{
+	void info(String accountName, int id) throws Exception{
 		logger.info("See booking info:" +
 				" accountName=\"" + accountName + "\"," +
 				" bookingId=\"" + id + "\"");
 		Hotel2000 hotel2000 = getContract(accountName);
 		bookingService.getBooking(hotel2000, id).subscribe(
-					booking -> {
-						logger.info("OK: " + booking);
-						logger.info(booking.getId() + "        "+booking.getStart()+" => ("+ (booking.getEnd().getDays()-booking.getStart().getDays())+" days) => " + booking.getEnd() + "        "+booking.getStatus());
-						logger.info("Hotel: " + booking.getHotelCode()+"(room:"+booking.getRoomId()+")");
-						logger.info("Client: " + booking.getClientAddress());
-						logger.info("Price: " + booking.getPrice());
+				booking -> {
+					logger.info("OK: " + booking);
+					logger.info(booking.getId() + "        " + booking.getStart() + " => (" + (booking.getEnd().getDays() - booking.getStart().getDays()) + " days) => " + booking.getEnd() + "        " + booking.getStatus());
+					logger.info("Hotel: " + booking.getHotelCode() + "(room:" + booking.getRoomId() + ")");
+					logger.info("Client: " + booking.getClientAddress());
+					logger.info("Price: " + booking.getPrice());
 
-					},
-					throwable -> logger.error("KO: infoBooking fail", throwable)
-			);
+				},
+				throwable -> logger.error("KO: info fail", throwable)
+		);
 	}
 }

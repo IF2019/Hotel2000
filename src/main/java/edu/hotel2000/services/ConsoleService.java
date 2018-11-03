@@ -188,7 +188,7 @@ public class ConsoleService implements CommandExec{
 		// Booking info
 		params = commandeParser.parse(commande, "booking|b info|i <bookingId> [account]=" + acc).orElse(null);
 		if(params != null){
-			bookingService.infoBooking(
+			bookingService.info(
 					params.get("account"),
 					Integer.parseInt(params.get("bookingId"))
 			);
