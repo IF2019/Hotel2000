@@ -29,7 +29,7 @@ public class ConsoleService implements CommandExec{
 		this.hotelService = new ConsoleHotelService(env, accountService, utilService, hotelService, bookingService);
 		this.commandeParser = new CommandeParser();
 		this.clientService = new ConsoleClientService(env, accountService, utilService);
-		this.bookingService = new ConsoleBookingService(env, accountService, bookingService);
+		this.bookingService = new ConsoleBookingService(env, accountService, utilService, bookingService);
 	}
 
 	private <T> Optional<T> optionalExclude(T value, T... excludes){
@@ -189,6 +189,26 @@ public class ConsoleService implements CommandExec{
 		params = commandeParser.parse(commande, "booking|b info|i <bookingId> [account]=" + acc).orElse(null);
 		if(params != null){
 			bookingService.info(
+					params.get("account"),
+					Integer.parseInt(params.get("bookingId"))
+			);
+			return;
+		}
+
+		// Booking canCancel
+		params = commandeParser.parse(commande, "booking|b canCancel|cc <bookingId> [account]=" + acc).orElse(null);
+		if(params != null){
+			bookingService.canCancel(
+					params.get("account"),
+					Integer.parseInt(params.get("bookingId"))
+			);
+			return;
+		}
+
+		// Booking cancel
+		params = commandeParser.parse(commande, "booking|b cancel|c <bookingId> [account]=" + acc).orElse(null);
+		if(params != null){
+			bookingService.cancel(
 					params.get("account"),
 					Integer.parseInt(params.get("bookingId"))
 			);

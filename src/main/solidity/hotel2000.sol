@@ -208,6 +208,46 @@ contract Hotel2000 {
 		msg.sender.transfer(transfer);
 	}
 
+	function cancelBooking(uint32 id) public {
+		bool          canCancel;
+		string memory message;
+		uint8         rate; // 0-100 cd 0% rembourser a 100%
+
+		(canCancel, message) = canCancelBooking(id);
+		require(canCancel, message);
+		Lib.Booking storage booking = bookings[id];
+		booking.status = Lib.BookingStatus.Cancelled;
+
+		uint32[] storage active_bookings = hotels[booking.hotelCode].active_bookings;
+		uint8 i;
+		for(i = 0; active_bookings[i] != booking.id ; i++){}
+		active_bookings[i]=active_bookings[active_bookings.length];
+		active_bookings.length--;
+
+		if(booking.client == msg.sender){
+			rate = uint8(booking.start - timestampToDaystamp(now))*20;
+			if(rate>100) rate = 100;
+		}else{ // hotel
+			rate = 100;
+		}
+
+		uint256 refound = booking.price * rate / 100;
+
+		booking.client.transfer(refound);
+		hotels[booking.hotelCode].owner.transfer(booking.price - refound);
+
+	}
+
+	function canCancelBooking(uint32 id) public view returns(bool, string) {
+		Lib.Booking storage booking = bookings[id];
+		if(!booking.isset) return(false, "booking not found");
+		if(booking.client != msg.sender && hotels[booking.hotelCode].owner == msg.sender) return(false, "not allowed to cancel this booking");
+		if(booking.start < timestampToDaystamp(now)) return(false, "booking already started");
+		if(booking.status != Lib.BookingStatus.Active) return(false, "Booking is archived");
+		return (true, "");
+
+	}
+
 	function editDescription(string _code, string _description) public {
 		Lib.Hotel storage hotel = hotels[_code];
 		require(msg.sender == hotel.owner, "not owner");
@@ -222,26 +262,26 @@ contract Hotel2000 {
 		return "test success";
 	}
 
-//	function test() public view returns (string, uint, uint, uint) {
-//		Lib.Hotel   storage hotel = hotels["Test"];
-//		uint256             transfer = 0;
-//		uint32[]           test;
-//		test.length = hotel.active_bookings.length;
-//		for (uint32 j = 0; j < test.length; j++) test[j] = hotel.active_bookings[i];
-//
-//		if(!hotel.isset) return ("Hotel Test not found", 0,0,0);
-//
-//		for (uint32 i = 0; i < test.length; ) {
-//			Lib.Booking memory booking;
-//			booking = bookings[hotel.active_bookings[i]];
-//			if (booking.end < timestampToDaystamp(now)) {
-//				transfer += booking.price;
-//				hotel.active_bookings[i] = hotel.active_bookings[--test.length];
-//			} else {
-//				i++;
-//				return("nop", booking.end, now, timestampToDaystamp(now));
-//			}
-//		}
-//		return("finish", test.length, transfer, 0);
-//	}
+	//	function test() public view returns (string, uint, uint, uint) {
+	//		Lib.Hotel   storage hotel = hotels["Test"];
+	//		uint256             transfer = 0;
+	//		uint32[]           test;
+	//		test.length = hotel.active_bookings.length;
+	//		for (uint32 j = 0; j < test.length; j++) test[j] = hotel.active_bookings[i];
+	//
+	//		if(!hotel.isset) return ("Hotel Test not found", 0,0,0);
+	//
+	//		for (uint32 i = 0; i < test.length; ) {
+	//			Lib.Booking memory booking;
+	//			booking = bookings[hotel.active_bookings[i]];
+	//			if (booking.end < timestampToDaystamp(now)) {
+	//				transfer += booking.price;
+	//				hotel.active_bookings[i] = hotel.active_bookings[--test.length];
+	//			} else {
+	//				i++;
+	//				return("nop", booking.end, now, timestampToDaystamp(now));
+	//			}
+	//		}
+	//		return("finish", test.length, transfer, 0);
+	//	}
 }

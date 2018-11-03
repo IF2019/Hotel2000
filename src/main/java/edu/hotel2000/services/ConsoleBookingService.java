@@ -1,16 +1,16 @@
 package edu.hotel2000.services;
 
 import edu.hotel2000.contract.Hotel2000;
-import edu.hotel2000.models.Booking;
 import edu.hotel2000.models.ConsoleEnv;
 import lombok.AllArgsConstructor;
 import org.apache.log4j.Logger;
 import org.web3j.crypto.CipherException;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.gas.DefaultGasProvider;
-import rx.Observable;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.math.BigInteger;
 
 @AllArgsConstructor
 public class ConsoleBookingService{
@@ -19,6 +19,7 @@ public class ConsoleBookingService{
 
 	private ConsoleEnv env;
 	private AccountService accountService;
+	private ConsoleUtilService consoleUtilService;
 	private BookingService bookingService;
 
 	Hotel2000 getContract(String accountName) throws IOException, CipherException{
@@ -43,5 +44,40 @@ public class ConsoleBookingService{
 				},
 				throwable -> logger.error("KO: info fail", throwable)
 		);
+	}
+
+	void canCancel(String accountName, int id) throws Exception{
+		logger.info("Check if canCancel booking:" +
+				" accountName=\"" + accountName + "\"," +
+				" bookingId=" + id);
+		Hotel2000 hotel2000 = getContract(accountName);
+		Tuple2<Boolean, String> res = hotel2000.canCancelBooking(BigInteger.valueOf(id)).send();
+		if(res.getValue1()){
+			logger.info("OK: Account \"" + accountName + "\" can cancel booking " + id);
+		}else{
+			logger.info("KO: Account \"" + accountName + "\" can't cancel booking " + id + "1: " + res.getValue2());
+		}
+
+	}
+
+	void cancel(String accountName, int id) throws Exception{
+		logger.info("Try cancel booking:" +
+				" accountName=\"" + accountName + "\"," +
+				" bookingId=" + id);
+		Hotel2000 hotel2000 = getContract(accountName);
+		DefaultGasProvider gasProvider = new DefaultGasProvider();
+		try{
+			TransactionReceipt res = hotel2000.cancelBooking(BigInteger.valueOf(id)).send();
+			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
+			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
+				logger.info("OK: Booking " + id + " canceled");
+			}else{
+				logger.error("KO: fail to cancel booking " + id);
+			}
+		}catch(Exception e){
+			logger.error("KO: cancelBooking crash id:" + id, e);
+		}
+
+
 	}
 }
