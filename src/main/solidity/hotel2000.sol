@@ -52,7 +52,7 @@ contract Hotel2000 {
 		);
 	}
 
-	function setHotelTitle(string _code, string _title){
+	function setHotelTitle(string _code, string _title) public{
 		bool canSet;
 		string memory message;
 		(canSet, message) = canSetHotelTitle(_code, _title);
@@ -60,7 +60,7 @@ contract Hotel2000 {
 		hotels[_code].title = _title;
 	}
 
-	function setHotelDescription(string _code, string _description){
+	function setHotelDescription(string _code, string _description) public{
 		bool canSet;
 		string memory message;
 		(canSet, message) = canSetHotelDescription(_code, _description);
@@ -68,14 +68,14 @@ contract Hotel2000 {
 		hotels[_code].description = _description;
 	}
 
-	function canSetHotelTitle(string _code, string _title) view returns(bool, string){
+	function canSetHotelTitle(string _code, string _title) public view returns(bool, string){
 		Lib.Hotel storage hotel = hotels[_code];
 		if(!hotel.isset) return(false, "hotel not found");
 		if(hotel.owner != msg.sender) return(false, "not owner");
 		return (true, "");
 	}
 
-	function canSetHotelDescription(string _code, string _description) view returns(bool, string){
+	function canSetHotelDescription(string _code, string _description) public view returns(bool, string){
 		Lib.Hotel storage hotel = hotels[_code];
 		if(!hotel.isset) return(false, "hotel not found");
 		if(hotel.owner != msg.sender) return(false, "not owner");
