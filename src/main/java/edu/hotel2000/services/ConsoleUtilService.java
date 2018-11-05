@@ -27,6 +27,10 @@ public class ConsoleUtilService{
 		return tr.isStatusOK() && !tr.getGasUsed().equals(gasLimit);
 	}
 
+	public boolean isSuccess(TransactionReceipt tr){
+		return isSuccess(tr, env.getGasProvider().getGasLimit());
+	}
+
 	public void showTransactionReceipt(TransactionReceipt tr, BigInteger gasLimit){
 
 		if(isSuccess(tr, gasLimit)){
@@ -44,6 +48,11 @@ public class ConsoleUtilService{
 			logger.warn("GasUsed: " +tr.getGasUsed());
 			logger.warn("==================== Transaction: FAIL =======================");
 		}
+	}
+
+
+	public void showTransactionReceipt(TransactionReceipt tr){
+		showTransactionReceipt(tr, env.getGasProvider().getGasLimit());
 	}
 
 	public void showBalance(String accountName) throws IOException, CipherException{

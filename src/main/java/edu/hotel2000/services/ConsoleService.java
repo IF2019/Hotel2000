@@ -97,6 +97,30 @@ public class ConsoleService implements CommandExec{
 		}
 
 
+		// Hotel setTitle
+		params = commandeParser.parse(commande, "hotel|h title|d <code> <title> [account]=" + acc).orElse(null);
+		if(params != null){
+			hotelService.setTitle(
+					params.get("account"),
+					params.get("code"),
+					params.get("title")
+			);
+			return;
+		}
+
+
+		// Hotel setDescription
+		params = commandeParser.parse(commande, "hotel|h title|d <code> <description> [account]=" + acc).orElse(null);
+		if(params != null){
+			hotelService.setDescription(
+					params.get("account"),
+					params.get("code"),
+					params.get("description")
+			);
+			return;
+		}
+
+
 		// Hotel info
 		params = commandeParser.parse(commande, "hotel|h info|i <code> [account]=" + acc).orElse(null);
 		if(params != null){

@@ -52,6 +52,36 @@ contract Hotel2000 {
 		);
 	}
 
+	function setHotelTitle(string _code, string _title){
+		bool canSet;
+		string memory message;
+		(canSet, message) = canSetHotelTitle(_code, _title);
+		require(canSet, message);
+		hotels[_code].title = _title;
+	}
+
+	function setHotelDescription(string _code, string _description){
+		bool canSet;
+		string memory message;
+		(canSet, message) = canSetHotelDescription(_code, _description);
+		require(canSet, message);
+		hotels[_code].description = _description;
+	}
+
+	function canSetHotelTitle(string _code, string _title) view returns(bool, string){
+		Lib.Hotel storage hotel = hotels[_code];
+		if(!hotel.isset) return(false, "hotel not found");
+		if(hotel.owner != msg.sender) return(false, "not owner");
+		return (true, "");
+	}
+
+	function canSetHotelDescription(string _code, string _description) view returns(bool, string){
+		Lib.Hotel storage hotel = hotels[_code];
+		if(!hotel.isset) return(false, "hotel not found");
+		if(hotel.owner != msg.sender) return(false, "not owner");
+		return (true, "");
+	}
+
 //	function getHotelRoom(string _code, uint32 index) public view returns(DATA){
 //		Lib.Hotel storage hotel = hotels[_code];
 //		require(hotel.isset, "hotel not found");

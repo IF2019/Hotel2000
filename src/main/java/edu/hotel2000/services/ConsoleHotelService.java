@@ -10,6 +10,7 @@ import org.web3j.crypto.CipherException;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.gas.DefaultGasProvider;
+import org.web3j.tx.gas.StaticGasProvider;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -153,6 +154,46 @@ class ConsoleHotelService{
 		}
 
 
+	}
+
+	void setTitle(String accountName, String code, String title) throws IOException, CipherException{
+		logger.info("Try to set hotel title:" +
+				" accountName=\"" + accountName + "\"," +
+				" hotelCode=\"" + code + "\"" +
+				" title=\"" + title + "\"");
+
+		Hotel2000 hotel2000 = getContract(accountName);
+		try{
+			TransactionReceipt res  = hotel2000.setHotelTitle(code, title).send();
+			if(consoleUtilService.isSuccess(res)){
+				logger.info("OK: Title set to \"" + title + "\"");
+			} else {
+				consoleUtilService.showTransactionReceipt(res);
+				logger.error("KO: fail to set title");
+			}
+		}catch(Exception e){
+			logger.error("KO: setTitle crash", e);
+		}
+	}
+
+	void setDescription(String accountName, String code, String description) throws IOException, CipherException{
+		logger.info("Try to set hotel title:" +
+				" accountName=\"" + accountName + "\"," +
+				" hotelCode=\"" + code + "\"" +
+				" description=\"" + description + "\"");
+
+		Hotel2000 hotel2000 = getContract(accountName);
+		try{
+			TransactionReceipt res  = hotel2000.setHotelDescription(code, description).send();
+			if(consoleUtilService.isSuccess(res)){
+				logger.info("OK: description was set");
+			} else {
+				consoleUtilService.showTransactionReceipt(res);
+				logger.error("KO: fail to set description");
+			}
+		}catch(Exception e){
+			logger.error("KO: setDescription crash", e);
+		}
 	}
 
 	void withdraw(String accountName, String code) throws IOException, CipherException{
