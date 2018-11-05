@@ -241,7 +241,7 @@ contract Hotel2000 {
 	function canCancelBooking(uint32 id) public view returns(bool, string) {
 		Lib.Booking storage booking = bookings[id];
 		if(!booking.isset) return(false, "booking not found");
-		if(booking.client != msg.sender || hotels[booking.hotelCode].owner != msg.sender) return(false, "not allowed to cancel this booking");
+		if(booking.client != msg.sender && hotels[booking.hotelCode].owner != msg.sender) return(false, "not allowed to cancel this booking");
 		if(booking.start < timestampToDaystamp(now)) return(false, "booking already started");
 		if(booking.status != Lib.BookingStatus.Active) return(false, "Booking is archived");
 		return (true, "");
