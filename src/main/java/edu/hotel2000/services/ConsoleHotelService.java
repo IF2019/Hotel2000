@@ -9,8 +9,6 @@ import org.apache.log4j.Logger;
 import org.web3j.crypto.CipherException;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
-import org.web3j.tx.gas.DefaultGasProvider;
-import org.web3j.tx.gas.StaticGasProvider;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -30,7 +28,7 @@ class ConsoleHotelService{
 
 	Hotel2000 getContract(String accountName) throws IOException, CipherException{
 		return accountService.findFromConfigOption(accountName)
-				.map(credentials -> Hotel2000.load(env.getContractAddress(), env.getWeb3j(), credentials, new DefaultGasProvider()))
+				.map(credentials -> Hotel2000.load(env.getContractAddress(), env.getWeb3j(), credentials, env.getGasProvider()))
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
 	}
 
@@ -140,11 +138,10 @@ class ConsoleHotelService{
 				" nbRoom=" + nbRoom + "," +
 				" price=" + price);
 		Hotel2000 hotel2000 = getContract(accountName);
-		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{
 			TransactionReceipt res = hotel2000.createHotel(code, BigInteger.valueOf(nbRoom), price).send();
-			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
-			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
+			consoleUtilService.showTransactionReceipt(res);
+			if(consoleUtilService.isSuccess(res)){
 				logger.info("OK: Hotel " + code + " created");
 			}else{
 				logger.error("KO: fail creating hotel " + code);
@@ -201,13 +198,12 @@ class ConsoleHotelService{
 				" accountName=\"" + accountName + "\"," +
 				" hotelCode=\"" + code + "\"");
 		Hotel2000 hotel2000 = getContract(accountName);
-		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{
 			logger.info("Before withdraw:");
 			consoleUtilService.showBalance(accountName);
 			TransactionReceipt res = hotel2000.withdraw(code).send();
-			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
-			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
+			consoleUtilService.showTransactionReceipt(res);
+			if(consoleUtilService.isSuccess(res)){
 				logger.info("OK: withdraw success");
 				logger.info("After withdraw:");
 				consoleUtilService.showBalance(accountName);

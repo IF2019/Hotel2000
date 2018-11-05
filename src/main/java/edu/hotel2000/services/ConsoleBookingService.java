@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.web3j.crypto.CipherException;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
-import org.web3j.tx.gas.DefaultGasProvider;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -24,7 +23,7 @@ public class ConsoleBookingService{
 
 	Hotel2000 getContract(String accountName) throws IOException, CipherException{
 		return accountService.findFromConfigOption(accountName)
-				.map(credentials -> Hotel2000.load(env.getContractAddress(), env.getWeb3j(), credentials, new DefaultGasProvider()))
+				.map(credentials -> Hotel2000.load(env.getContractAddress(), env.getWeb3j(), credentials, env.getGasProvider()))
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
 	}
 
@@ -65,11 +64,10 @@ public class ConsoleBookingService{
 				" accountName=\"" + accountName + "\"," +
 				" bookingId=" + id);
 		Hotel2000 hotel2000 = getContract(accountName);
-		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{
 			TransactionReceipt res = hotel2000.cancelBooking(BigInteger.valueOf(id)).send();
-			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
-			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
+			consoleUtilService.showTransactionReceipt(res);
+			if(consoleUtilService.isSuccess(res)){
 				logger.info("OK: Booking " + id + " canceled");
 			}else{
 				logger.error("KO: fail to cancel booking " + id);

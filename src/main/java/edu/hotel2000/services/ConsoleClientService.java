@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.web3j.crypto.CipherException;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
-import org.web3j.tx.gas.DefaultGasProvider;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -27,7 +26,7 @@ public class ConsoleClientService{
 
 	Hotel2000 getContract(String accountName) throws IOException, CipherException{
 		return accountService.findFromConfigOption(accountName)
-				.map(credentials -> Hotel2000.load(env.getContractAddress(), env.getWeb3j(), credentials, new DefaultGasProvider()))
+				.map(credentials -> Hotel2000.load(env.getContractAddress(), env.getWeb3j(), credentials, env.getGasProvider()))
 				.orElseThrow(() -> new RuntimeException("Account " + accountName + " not found"));
 	}
 
@@ -76,7 +75,6 @@ public class ConsoleClientService{
 				" roomId=" + room + "," +
 				" wei=" + weiO.map(Objects::toString).orElse("auto") );
 		Hotel2000 hotel2000 = getContract(accountName);
-		DefaultGasProvider gasProvider = new DefaultGasProvider();
 		try{
 			Money wei;
 			if(weiO.isPresent()){
@@ -93,8 +91,8 @@ public class ConsoleClientService{
 			}
 			logger.info("Compute booking ...");
 			TransactionReceipt res = hotel2000.book(code, start, end, BigInteger.valueOf(room), wei).send();
-			consoleUtilService.showTransactionReceipt(res, gasProvider.getGasLimit());
-			if(consoleUtilService.isSuccess(res, gasProvider.getGasLimit())){
+			consoleUtilService.showTransactionReceipt(res);
+			if(consoleUtilService.isSuccess(res)){
 				logger.info("OK: Booking success");
 			}else {
 				logger.error("KO: Booking fail (use canBook to view error)");
