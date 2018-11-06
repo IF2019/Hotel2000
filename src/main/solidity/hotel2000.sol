@@ -82,16 +82,6 @@ contract Hotel2000 {
 		return (true, "");
 	}
 
-//	function getHotelRoom(string _code, uint32 index) public view returns(DATA){
-//		Lib.Hotel storage hotel = hotels[_code];
-//		require(hotel.isset, "hotel not found");
-//		require(hotel.rooms.length > index, "roomId not found");
-//		Lib.Room storage roomId = hotel.rooms[index];
-//		return (
-//			DATA
-//		);
-//	}
-
 	function getHotelRoomBookingId(string _code, uint32 index, uint256 timestamps) public view returns (uint32){
 		Lib.Hotel storage hotel = hotels[_code];
 		require(hotel.isset, "hotel not found");
@@ -160,7 +150,7 @@ contract Hotel2000 {
 		return (true, "you can book this room");
 	}
 
-	// start and end are timestamps        if (msg.sender.balance < hotels[_code].price) return (false, "your balance isn't high enough");
+	// start and end are timestamps
 
 	function canBook_internal(string _code, uint32 _start, uint32 _end, uint32 _room) view internal returns(bool, string) {
 		Lib.Hotel storage hotel = hotels[_code];
@@ -278,12 +268,6 @@ contract Hotel2000 {
 
 	}
 
-	function editDescription(string _code, string _description) public {
-		Lib.Hotel storage hotel = hotels[_code];
-		require(msg.sender == hotel.owner, "not owner");
-		hotel.description = _description;
-	}
-
 	function timestampToDaystamp(uint256 timestamp) pure public returns(uint32) {
 		return uint32(timestamp / (86400 / TIME_SCALE));
 	}
@@ -291,27 +275,4 @@ contract Hotel2000 {
 	function test() public pure returns (string) {
 		return "test success";
 	}
-
-	//	function test() public view returns (string, uint, uint, uint) {
-	//		Lib.Hotel   storage hotel = hotels["Test"];
-	//		uint256             transfer = 0;
-	//		uint32[]           test;
-	//		test.length = hotel.active_bookings.length;
-	//		for (uint32 j = 0; j < test.length; j++) test[j] = hotel.active_bookings[i];
-	//
-	//		if(!hotel.isset) return ("Hotel Test not found", 0,0,0);
-	//
-	//		for (uint32 i = 0; i < test.length; ) {
-	//			Lib.Booking memory booking;
-	//			booking = bookings[hotel.active_bookings[i]];
-	//			if (booking.end < timestampToDaystamp(now)) {
-	//				transfer += booking.price;
-	//				hotel.active_bookings[i] = hotel.active_bookings[--test.length];
-	//			} else {
-	//				i++;
-	//				return("nop", booking.end, now, timestampToDaystamp(now));
-	//			}
-	//		}
-	//		return("finish", test.length, transfer, 0);
-	//	}
 }

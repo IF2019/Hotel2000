@@ -10,7 +10,7 @@
 3) Maven clean install <br>
     `mvn clean install`
 4) Creation d'un compt pour deployer le/les contract(s) <br>
-<br>
+    <br>
     Lancer le script `./scripts/create-count.sh <YOUR_PASSWORD> deploy` pour générer un compt <br>
     Exemple: `./scripts/create-count.sh azerty deploy`<br>
     <br>
