@@ -25,5 +25,8 @@
     Ce script mine de Ethereum pour ajouter des transation/contract a la blockchain. <br>
     Il est possible de miner pour un utilisateur specifique exemple: <br>
     `./scripts/server.sh ab9f2020e56dbae3a2d7d0eefaff5df7fba0a7cc` <br>
-3) Build and run App.java
-    'mvn exec:java'
+3) Build and run App.java <br>
+    `mvn exec:java`<br>
+    For use a specific hotel200 contract: <br>
+    `mvn exec:java -Dexec.args="<CONTRACT_ADDRESS>"`<br>
+    Exemple: `mvn exec:java -Dexec.args="0x0f4f2020e56dbae3a2d7d0eefaff5df7fba05af89`
