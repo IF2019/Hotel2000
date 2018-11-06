@@ -26,3 +26,4 @@
     Il est possible de miner pour un utilisateur specifique exemple: <br>
     `./scripts/server.sh ab9f2020e56dbae3a2d7d0eefaff5df7fba0a7cc` <br>
 3) Build and run App.java
+    'mvn exec:java'
