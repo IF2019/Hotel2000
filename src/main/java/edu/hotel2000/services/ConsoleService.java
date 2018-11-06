@@ -98,7 +98,7 @@ public class ConsoleService implements CommandExec{
 
 
 		// Hotel setTitle
-		params = commandeParser.parse(commande, "hotel|h title|d <code> <title> [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "hotel|h title|t <code> <title> [account]=" + acc).orElse(null);
 		if(params != null){
 			hotelService.setTitle(
 					params.get("account"),
@@ -110,7 +110,7 @@ public class ConsoleService implements CommandExec{
 
 
 		// Hotel setDescription
-		params = commandeParser.parse(commande, "hotel|h title|d <code> <description> [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "hotel|h description|d <code> <description> [account]=" + acc).orElse(null);
 		if(params != null){
 			hotelService.setDescription(
 					params.get("account"),

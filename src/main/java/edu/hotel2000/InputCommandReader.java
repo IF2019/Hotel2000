@@ -1,5 +1,6 @@
 package edu.hotel2000;
 
+import com.fasterxml.jackson.databind.deser.DataFormatReaders;
 import edu.hotel2000.services.CommandExec;
 import org.apache.log4j.Logger;
 
@@ -7,6 +8,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class InputCommandReader extends Thread{
 
@@ -31,8 +39,21 @@ public class InputCommandReader extends Thread{
 
 	}
 
-	private String[] parse(String commande){
-		return commande.split(" ");
+	private String[] parse(String command){
+		Pattern pattern = Pattern.compile("(^|\\ *)(([^ \\\"]+)|(\\\"(((\\\\\\\\)|(\\\\\\\")|[^\"])*)\\\"))");
+		Matcher matche = pattern.matcher(command);
+		List<String> res = new ArrayList<>();
+		while(matche.find()){
+			if(matche.group(3) == null){
+				res.add(matche.group(5)
+						.replaceAll("\\\\\\\"","\"")
+						.replaceAll("\\\\\\\\","\\\\"));
+			}else {
+				res.add(matche.group(3));
+
+			}
+		}
+		return res.toArray(new String[res.size()]);
 	}
 
 	@Override
@@ -49,7 +70,7 @@ public class InputCommandReader extends Thread{
 	}
 
 	private void loop() throws IOException{
-		System.out.print("> ");
+//		System.out.print("> ");
 		readCommand();
 	}
 }

@@ -11,10 +11,10 @@ import java.util.stream.Stream;
 public class CommandeParser{
 
 	private enum CommandElementType{
-		TEXT("^(([a-zA-Z0-9\\?\\|]*))$"),
-		REQUIRED_VALUE("^\\<(([a-zA-Z0-9]*))\\>$"),
-		DEFAULT_VALUE("^\\[([a-zA-Z0-9]*)\\]=([a-zA-Z0-9\\-]*)$"),
-		OPTIONAL_VALUE("^\\[(([a-zA-Z0-9]*))\\]$");
+		TEXT("^(([^<>\\[\\]\\(\\)]*))$"),
+		REQUIRED_VALUE("^\\<(([^<>\\[\\]\\(\\)]*))\\>$"),
+		DEFAULT_VALUE("^\\[([^<>\\[\\]\\(\\)]*)\\]=([^<>\\[\\]\\(\\)]*)$"),
+		OPTIONAL_VALUE("^\\[(([^<>\\[\\]\\(\\)]*))\\]$");
 
 		private final Pattern pattern;
 
