@@ -167,7 +167,7 @@ public class ConsoleService implements CommandExec{
 
 
 		// Client canBook
-		params = commandeParser.parse(commande, "clientAddress|c canBook|cb <code> <start> <end> <roomId> [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "client|c canBook|cb <code> <start> <end> <roomId> [account]=" + acc).orElse(null);
 		if(params != null){
 			clientService.canBook(
 					params.get("account"),
@@ -181,7 +181,7 @@ public class ConsoleService implements CommandExec{
 
 
 		// Client book
-		params = commandeParser.parse(commande, "clientAddress|c book|b <code> <start> <end> <roomId> [money] [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "client|c book|b <code> <start> <end> <roomId> [money] [account]=" + acc).orElse(null);
 		if(params != null){
 			clientService.book(
 					params.get("account"),
@@ -196,7 +196,7 @@ public class ConsoleService implements CommandExec{
 
 
 		// Client priceBook
-		params = commandeParser.parse(commande, "clientAddress|c priceBook|pb <code> <start> <end> <roomId> [account]=" + acc).orElse(null);
+		params = commandeParser.parse(commande, "client|c priceBook|pb <code> <start> <end> <roomId> [account]=" + acc).orElse(null);
 		if(params != null){
 			clientService.priceBook(
 					params.get("account"),
